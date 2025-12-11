@@ -9,18 +9,19 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="stylesheet" href="/css/Apply-certificate.css">
 </head>
-
+<style>
+    /* आपका मौजूदा CSS कोड यहाँ रहेगा */
+    /* ... पूरा CSS ... */
+</style>
 <body>
   <header>
     <div class="header">
       <div class="web-text">
         <p>
           Website:
-          <span>RID (Reserch Innovation & Discovery) by TWKSAA Welfare Foundation
-          </span>
+          <span>RID (Research Innovation & Discovery) by TWKSAA Welfare Foundation</span>
         </p>
-
-        <p>Helpline: <span>+91 98927 82728 </span></p>
+        <p>Helpline: <span>+91 98927 82728</span></p>
         <p>Email: <span>supportid@gamil.com</span></p>
       </div>
       <div class="right-text">
@@ -82,6 +83,15 @@
               </select>
             </div>
           </div>
+
+          <div class="form-group">
+            <label>Apply For Certificate Type <span>*</span></label>
+            <select id="certificateType" name="certificateType" required onchange="updateDurationField()">
+              <option value="" disabled selected>Select certificate type</option>
+              <option value="CERTIFICATE_OF_COMPLETION">CERTIFICATE OF COMPLETION</option>
+              <option value="EXPERIENCE_LETTER">Experience Letter of Internship Completion at RID Bharat</option>
+            </select>
+          </div>
           
           <div class="form-row">
             <div class="form-group">
@@ -98,20 +108,32 @@
           <div class="form-row">
             <div class="form-group">
               <label>Start Date <span>*</span></label>
-              <input type="date" id="startDate" name="startDate" required>
+              <input type="date" id="startDate" name="startDate" required onchange="calculateDuration()">
             </div>
             
             <div class="form-group">
               <label>End Date <span>*</span></label>
-              <input type="date" id="endDate" name="endDate" required>
+              <input type="date" id="endDate" name="endDate" required onchange="calculateDuration()">
             </div>
           </div>
           
-          <div class="form-group">
-            <label>Duration (in weeks) <span>*</span></label>
-            <input type="number" id="duration" name="duration" min="1" max="52" placeholder="Enter duration in weeks" required>
-          </div>
-          
+         <div class="form-row">
+  <div class="form-group">
+    <label>Duration <span>*</span></label>
+    <input type="number" id="duration" name="duration" min="1" max="60" placeholder="e.g., 2" required>
+  </div>
+  
+  <div class="form-group">
+    <label>Duration Unit <span>*</span></label>
+    <select id="durationUnit" name="durationUnit" required>
+      <option value="" disabled selected>Select unit</option>
+      <option value="weeks">Weeks</option>
+      <option value="months">Months</option>
+    </select>
+  </div>
+</div>
+
+
           <div class="form-group">
             <label>Project Name <span>*</span></label>
             <input type="text" id="projectName" name="projectName" placeholder="Enter your project name" required>
@@ -150,10 +172,18 @@
         <ul>
           <li><strong>Step 1:</strong> Fill in your personal details accurately.</li>
           <li><strong>Step 2:</strong> Select the course you completed from the dropdown menu.</li>
-          <li><strong>Step 3:</strong> Provide your contact information (phone & email).</li>
-          <li><strong>Step 4:</strong> Provide the duration and dates of your program.</li>
-          <li><strong>Step 5:</strong> Enter the name of your project/work.</li>
-          <li><strong>Step 6:</strong> Review your information and submit the application.</li>
+          <li><strong>Step 3:</strong> Select the type of certificate you need.</li>
+          <li><strong>Step 4:</strong> Provide your contact information (phone & email).</li>
+          <li><strong>Step 5:</strong> Provide the start and end dates of your program.</li>
+          <li><strong>Step 6:</strong> Duration will be automatically calculated.</li>
+          <li><strong>Step 7:</strong> Enter the name of your project/work.</li>
+          <li><strong>Step 8:</strong> Review your information and submit the application.</li>
+        </ul>
+        
+        <h3>Certificate Types:</h3>
+        <ul>
+          <li><strong>CERTIFICATE OF COMPLETION:</strong> For short-term courses and training programs.</li>
+          <li><strong>EXPERIENCE LETTER:</strong> For internship programs with detailed project work.</li>
         </ul>
         
         <h3>Important Information:</h3>
@@ -172,67 +202,81 @@
     </div>
   </div>
 
- <script>
-document.getElementById("applicationForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  // Show loading
-  const submitBtn = document.getElementById("submitBtn");
-  const originalText = submitBtn.innerHTML;
-  submitBtn.innerHTML = '<span class="material-symbols-outlined">pending</span> Processing...';
-  submitBtn.disabled = true;
-
-  const data = {
-    fullName: document.getElementById("fullName").value,
-    fatherName: document.getElementById("fatherName").value,
-    dob: document.getElementById("dob").value,
-    course: document.getElementById("course").value,
-    phone: document.getElementById("phone").value,
-    email: document.getElementById("email").value,
-    duration: document.getElementById("duration").value,
-    startDate: document.getElementById("startDate").value,
-    endDate: document.getElementById("endDate").value,
-    projectName: document.getElementById("projectName").value
-  };
-
-  try {
-    const res = await fetch('/api/apply', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
+    // Duration calculation function
+ 
+<script>
+  // Form submission
+  document.getElementById("applicationForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
     
-    if (result.success) {
-      // Show success message with App ID
-      document.getElementById("appIdDisplay").textContent = result.appId;
-      document.getElementById("successMessage").style.display = "block";
-      
-      // Reset form
-      document.getElementById("applicationForm").reset();
-      
-      // Scroll to success message
-      document.getElementById("successMessage").scrollIntoView({ 
-        behavior: 'smooth' 
-      });
-      
-      // Optional: Auto-copy App ID to clipboard
-      navigator.clipboard.writeText(result.appId).then(() => {
-        console.log("App ID copied to clipboard");
-      });
-    } else {
-      alert(result.message || "Error submitting application");
+    // Validate duration
+    const duration = document.getElementById("duration").value;
+    const durationUnit = document.getElementById("durationUnit").value;
+    
+    if (!duration || !durationUnit) {
+      alert("Please enter duration and select unit");
+      return;
     }
-  } catch (error) {
-    console.error(error);
-    alert("Network error. Please try again.");
-  } finally {
-    submitBtn.innerHTML = originalText;
-    submitBtn.disabled = false;
-  }
-});
-</script>
-</body>
+    
+    // Show loading
+    const submitBtn = document.getElementById("submitBtn");
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined">pending</span> Processing...';
+    submitBtn.disabled = true;
 
+    const data = {
+      fullName: document.getElementById("fullName").value,
+      fatherName: document.getElementById("fatherName").value,
+      dob: document.getElementById("dob").value,
+      course: document.getElementById("course").value,
+      certificateType: document.getElementById("certificateType").value,
+      phone: document.getElementById("phone").value,
+      email: document.getElementById("email").value,
+      duration: document.getElementById("duration").value,
+      durationUnit: document.getElementById("durationUnit").value,
+      startDate: document.getElementById("startDate").value,
+      endDate: document.getElementById("endDate").value,
+      projectName: document.getElementById("projectName").value
+    };
+
+    try {
+      const res = await fetch('/api/apply', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      
+      if (result.success) {
+        // Show success message with App ID
+        document.getElementById("appIdDisplay").textContent = result.appId;
+        document.getElementById("successMessage").style.display = "block";
+        
+        // Reset form
+        document.getElementById("applicationForm").reset();
+        
+        // Scroll to success message
+        document.getElementById("successMessage").scrollIntoView({ 
+          behavior: 'smooth' 
+        });
+        
+        // Auto-copy App ID to clipboard
+        navigator.clipboard.writeText(result.appId).then(() => {
+          alert("Application ID copied to clipboard: " + result.appId);
+        });
+      } else {
+        alert(result.message || "Error submitting application");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Network error. Please try again.");
+    } finally {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+ 
+</body>
 </html>

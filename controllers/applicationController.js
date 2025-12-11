@@ -25,16 +25,40 @@ async function sendMail(to, subject, html) {
   });
 }
 
+// Helper function to format date
+function formatDate(dateStr) {
+  if (!dateStr) return new Date().toLocaleDateString();
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
+}
+
+function getOrdinalSuffix(day) {
+  if (day > 3 && day < 21) return 'th';
+  switch (day % 10) {
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
+    default: return "th";
+  }
+}
+
 // Apply Certificate
 exports.applyCertificate = async (req, res) => {
   try {
     const {
-      fullName, fatherName, dob, course,
-      phone, email, duration, startDate, endDate, projectName
+      fullName, fatherName, dob, course, certificateType,
+      phone, email, duration, durationUnit, startDate, endDate, projectName
     } = req.body;
 
     // Validation
-    if (!fullName || !email || !phone || !course) {
+    if (!fullName || !email || !phone || !course || !certificateType || !duration || !durationUnit) {
       return res.status(400).json({ 
         success: false, 
         message: "Please fill all required fields" 
@@ -44,16 +68,18 @@ exports.applyCertificate = async (req, res) => {
     // Generate unique ID
     const appId = "RIDAPP" + Math.floor(10000000 + Math.random() * 90000000);
 
-    // Save to database
+    // Save to database with duration and unit
     const newApp = await Application.create({
       appId,
       fullName,
       fatherName,
       dob,
       course,
+      certificateType,
       phone,
       email,
       duration,
+      durationUnit,
       startDate,
       endDate,
       projectName
@@ -68,7 +94,9 @@ exports.applyCertificate = async (req, res) => {
         <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #166534;">Your Application Details:</h3>
           <p><strong>Application ID:</strong> ${appId}</p>
+          <p><strong>Certificate Type:</strong> ${certificateType === 'CERTIFICATE_OF_COMPLETION' ? 'Certificate of Completion' : 'Experience Letter'}</p>
           <p><strong>Course:</strong> ${course}</p>
+          <p><strong>Duration:</strong> ${duration} ${durationUnit}</p>
           <p><strong>Status:</strong> <span style="color: #d97706;">PENDING VERIFICATION</span></p>
         </div>
         <p>Your application is under review by admin. You'll receive another email once your certificate is verified.</p>
@@ -98,11 +126,13 @@ exports.applyCertificate = async (req, res) => {
           <h3>Applicant Details:</h3>
           <p><strong>Name:</strong> ${fullName}</p>
           <p><strong>Application ID:</strong> ${appId}</p>
+          <p><strong>Certificate Type:</strong> ${certificateType === 'CERTIFICATE_OF_COMPLETION' ? 'Certificate of Completion' : 'Experience Letter'}</p>
           <p><strong>Course:</strong> ${course}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Phone:</strong> ${phone}</p>
           <p><strong>Project:</strong> ${projectName}</p>
-          <p><strong>Duration:</strong> ${duration} week(s)</p>
+          <p><strong>Duration:</strong> ${duration} ${durationUnit}</p>
+          <p><strong>Certificate Type Code:</strong> ${certificateType}</p>
         </div>
         <div style="margin: 25px 0; text-align: center;">
           <a href="${req.protocol}://${req.get('host')}/api/verify-admin/${appId}" 
@@ -131,11 +161,10 @@ exports.applyCertificate = async (req, res) => {
   }
 };
 
-// Admin Verify with type parameter support
+// Admin Verify
 exports.adminVerify = async (req, res) => {
   try {
     const { appId } = req.params;
-    const { type = 'internship' } = req.query; // Default to internship type
     
     const app = await Application.findOne({ appId });
     
@@ -154,18 +183,21 @@ exports.adminVerify = async (req, res) => {
     app.verifiedAt = new Date();
     await app.save();
 
-    // Generate certificate PDF
+    // Generate certificate PDF based on certificate type
     const certsDir = path.join(__dirname, "../certificates");
     if (!fs.existsSync(certsDir)) {
       fs.mkdirSync(certsDir, { recursive: true });
     }
     const filePath = path.join(certsDir, `${appId}.pdf`);
     
-    // Choose certificate type based on parameter
-    if (type === 'creative') {
-      await generateCreativeCertificatePDF(app, filePath);
+    // Choose certificate type based on certificateType field
+    if (app.certificateType === 'CERTIFICATE_OF_COMPLETION') {
+      await generateCompletionCertificatePDF(app, filePath);
+    } else if (app.certificateType === 'EXPERIENCE_LETTER') {
+      await generateExperienceLetterPDF(app, filePath);
     } else {
-      await generateCertificatePDF(app, filePath); // This is the internship letter format
+      // Default to completion certificate
+      await generateCompletionCertificatePDF(app, filePath);
     }
 
     // Send email to user about verification
@@ -177,8 +209,10 @@ exports.adminVerify = async (req, res) => {
         <div style="background: #f0fdf4; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center;">
           <h3 style="color: #166534;">Certificate Details</h3>
           <p><strong>Application ID:</strong> ${appId}</p>
+          <p><strong>Certificate Type:</strong> ${app.certificateType === 'CERTIFICATE_OF_COMPLETION' ? 'Certificate of Completion' : 'Experience Letter'}</p>
           <p><strong>Course:</strong> ${app.course}</p>
           <p><strong>Project:</strong> ${app.projectName}</p>
+          <p><strong>Duration:</strong> ${app.duration} ${app.durationUnit || 'weeks'}</p>
           <div style="margin: 25px 0;">
             <a href="${req.protocol}://${req.get('host')}/api/download/${appId}" 
                style="background: linear-gradient(135deg, #16a34a, #22c55e); 
@@ -216,6 +250,7 @@ exports.adminVerify = async (req, res) => {
         <div class="info">
           <p><strong>Application ID:</strong> ${appId}</p>
           <p><strong>Applicant:</strong> ${app.fullName}</p>
+          <p><strong>Certificate Type:</strong> ${app.certificateType === 'CERTIFICATE_OF_COMPLETION' ? 'Certificate of Completion' : 'Experience Letter'}</p>
           <p>Certificate has been generated and email sent to ${app.email}</p>
           <p><a href="/verify">Go to Verification Page</a></p>
         </div>
@@ -254,7 +289,9 @@ exports.verifyById = async (req, res) => {
       fatherName: app.fatherName,
       dob: app.dob,
       course: app.course,
+      certificateType: app.certificateType,
       duration: app.duration,
+      durationUnit: app.durationUnit,
       startDate: app.startDate,
       endDate: app.endDate,
       projectName: app.projectName,
@@ -293,12 +330,18 @@ exports.downloadCertificate = async (req, res) => {
     const filePath = path.join(__dirname, `../certificates/${appId}.pdf`);
     
     if (!fs.existsSync(filePath)) {
-      // Generate if not exists (default to internship format)
-      await generateCertificatePDF(app, filePath);
+      // Generate based on certificate type
+      if (app.certificateType === 'CERTIFICATE_OF_COMPLETION') {
+        await generateCompletionCertificatePDF(app, filePath);
+      } else if (app.certificateType === 'EXPERIENCE_LETTER') {
+        await generateExperienceLetterPDF(app, filePath);
+      } else {
+        await generateCompletionCertificatePDF(app, filePath);
+      }
     }
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="RID_Certificate_${appId}.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="RID_${app.certificateType === 'CERTIFICATE_OF_COMPLETION' ? 'Certificate' : 'ExperienceLetter'}_${appId}.pdf"`);
     
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
@@ -308,161 +351,374 @@ exports.downloadCertificate = async (req, res) => {
   }
 };
 
-// Generate Internship Experience Certificate PDF (Based on provided PDF)
-async function generateCertificatePDF(app, filePath) {
+// Generate Completion Certificate PDF - Single page with border
+async function generateCompletionCertificatePDF(app, filePath) {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({ 
         size: "A4", 
-        margin: 50
+        margin: 40
       });
       
       const stream = fs.createWriteStream(filePath);
       doc.pipe(stream);
 
-      // Set fonts and colors
+      // Set colors
       const primaryColor = '#000000';
       const secondaryColor = '#666666';
       const accentColor = '#2c3e50';
+      const certificateColor = '#166534';
 
-      // Function to format date
-      function formatDate(dateStr) {
-        if (!dateStr) return new Date().toLocaleDateString();
-        const date = new Date(dateStr);
-        const day = date.getDate();
-        const monthNames = [
-          "January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"
-        ];
-        const month = monthNames[date.getMonth()];
-        const year = date.getFullYear();
-        return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
-      }
+      // Add border around the page
+      doc.lineWidth(2);
+      doc.strokeColor('#16a34a');
+      doc.rect(30, 30, doc.page.width - 60, doc.page.height - 60).stroke();
 
-      function getOrdinalSuffix(day) {
-        if (day > 3 && day < 21) return 'th';
-        switch (day % 10) {
-          case 1: return "st";
-          case 2: return "nd";
-          case 3: return "rd";
-          default: return "th";
-        }
-      }
+      // Inner border
+      doc.lineWidth(1);
+      doc.strokeColor('#cccccc');
+      doc.rect(35, 35, doc.page.width - 70, doc.page.height - 70).stroke();
 
-      // Function to format duration
-      function formatDuration(weeks) {
-        if (!weeks) return "6 months";
-        const months = Math.floor(weeks / 4.33);
-        if (months >= 1) {
-          return `${months} month${months > 1 ? 's' : ''}`;
-        }
-        return `${weeks} week${weeks > 1 ? 's' : ''}`;
-      }
+      // Get duration details
+      const durationValue = app.duration || "0";
+      const durationUnit = app.durationUnit || "weeks";
+      const startDate = formatDate(app.startDate);
+      const endDate = formatDate(app.endDate);
 
       // ===== HEADER SECTION =====
       // Top left: Registration Number
       doc.fillColor(secondaryColor).fontSize(10)
-         .text('Registration Number: 048884', 50, 50);
+         .text('Registration Number: 048884', 50, 60);
 
       // Top right: Website
-      doc.text('Website: www.ridbharat.com', 0, 50, { align: 'right' });
+      doc.text('Website: www.ridbharat.com', 0, 60, { align: 'right' });
 
       // Center: Organization Name
       doc.fillColor(accentColor).fontSize(22).font('Helvetica-Bold')
-         .text('Research, Innovation & Discovery Bharat', 0, 80, { align: 'center' });
+         .text('Research, Innovation & Discovery Bharat', 0, 90, { align: 'center' });
 
       // Tagline
       doc.fillColor(accentColor).fontSize(14)
-         .text('RID Organization, Provides Solutions for Every Problem', 0, 105, { align: 'center' });
+         .text('RID Organization, Provides Solutions for Every Problem', 0, 115, { align: 'center' });
 
       // Managed by and certifications
       doc.fillColor(secondaryColor).fontSize(10)
-         .text('Managed & Run by TWKSAA Welfare Foundation, Certified by Central Government', 0, 130, { align: 'center' });
+         .text('Managed & Run by TWKSAA Welfare Foundation, Certified by Central Government', 0, 140, { align: 'center' });
       
-      doc.text('An ISO 9001:2015 Certified Organization', 0, 145, { align: 'center' });
+      doc.text('An ISO 9001:2015 Certified Organization', 0, 155, { align: 'center' });
 
       // Horizontal line
       doc.strokeColor('#cccccc').lineWidth(1)
-         .moveTo(50, 160)
-         .lineTo(doc.page.width - 50, 160)
+         .moveTo(50, 170)
+         .lineTo(doc.page.width - 50, 170)
+         .stroke();
+
+      // Issue Date and Certificate Number
+      const issueDate = formatDate(new Date());
+      doc.fillColor(primaryColor).fontSize(11)
+         .text(`Issue Date: ${issueDate}`, 50, 190);
+      
+      doc.text(`Certificate Number: ${app.appId}`, 0, 190, { align: 'right' });
+
+      // Duration Line (NEW - Added as per requirement)
+      doc.fillColor(certificateColor).fontSize(11).font('Helvetica-Bold')
+         .text(`Duration: ${durationValue} ${durationUnit} (${startDate} to ${endDate})`, 0, 210, { align: 'center' });
+
+      // Certificate Title
+      doc.fillColor(certificateColor).fontSize(28).font('Helvetica-Bold')
+         .text('CERTIFICATE OF COMPLETION', 0, 240, { align: 'center' });
+
+      // ===== BODY CONTENT =====
+      // Main content
+      doc.fillColor(primaryColor).fontSize(14)
+         .text('This is to certify that', 0, 290, { align: 'center' });
+
+      // Name in bold and larger font
+      doc.fillColor(certificateColor).fontSize(24).font('Helvetica-Bold')
+         .text(app.fullName.toUpperCase(), 0, 320, { align: 'center' });
+      
+      doc.fillColor(primaryColor).fontSize(14)
+         .text(`Son/Daughter of ${app.fatherName}`, 0, 350, { align: 'center' });
+
+      // Course completion details
+      doc.fontSize(14)
+         .text(`has successfully completed the ${app.course} course`, 0, 390, { align: 'center' });
+      
+      doc.fontSize(14)
+         .text(`with project "${app.projectName}"`, 0, 410, { align: 'center' });
+
+      // Duration in body text - जो user ने duration डाला है वही दिखेगा
+      doc.fontSize(14)
+         .text(`Duration: ${durationValue} ${durationUnit} (${startDate} to ${endDate})`, 0, 440, { align: 'center' });
+
+      // Achievement text
+      doc.fontSize(12)
+         .text('has demonstrated dedication, hard work and excellence throughout the course.', 50, 480, {
+           align: 'left',
+           width: doc.page.width - 100
+         });
+
+      doc.fontSize(12)
+         .text('This certificate is awarded in recognition of successful completion of the training program.', 50, 500, {
+           align: 'left',
+           width: doc.page.width - 100
+         });
+
+      // ===== SIGNATURE SECTION =====
+      const signatureY = 560;
+      
+      // Random names array
+      const randomNames = [
+        "Er. Rajesh Prasad",
+        "Er. Deepak Kumar"
+      ];
+      
+      // Pick random name
+      const randomIndex = Math.floor(Math.random() * randomNames.length);
+      const randomName = randomNames[randomIndex];
+
+      // Left side: Signature
+      doc.fillColor(primaryColor).fontSize(12)
+         .text('Authorized Signatory', 100, signatureY);
+      
+      doc.fontSize(14).font('Helvetica-Bold')
+         .text(randomName, 100, signatureY + 30);
+      
+      doc.fontSize(12).font('Helvetica')
+         .text('CEO & Director', 100, signatureY + 50);
+      
+      doc.text('RID Bharat, Bhopal', 100, signatureY + 70);
+
+      // Signature line
+      doc.strokeColor('#000000').lineWidth(1)
+         .moveTo(100, signatureY + 25)
+         .lineTo(300, signatureY + 25)
+         .stroke();
+
+      // Right side: Stamp/Seal area
+      doc.fillColor(secondaryColor).fontSize(10)
+         .text('Official Stamp & Seal', doc.page.width - 200, signatureY, {
+           width: 150,
+           align: 'center'
+         });
+
+      // Draw stamp circle
+      doc.strokeColor('#dc2626').lineWidth(2)
+         .circle(doc.page.width - 125, signatureY + 40, 40)
+         .stroke();
+
+      doc.fillColor('#dc2626').fontSize(10).font('Helvetica-Bold')
+         .text('RID BHARAT', doc.page.width - 125, signatureY + 35, {
+           width: 80,
+           align: 'center'
+         });
+      
+      doc.text('OFFICIAL', doc.page.width - 125, signatureY + 50, {
+        width: 80,
+        align: 'center'
+      });
+
+      doc.text('CERTIFICATE', doc.page.width - 125, signatureY + 65, {
+        width: 80,
+        align: 'center'
+      });
+
+      // ===== FOOTER =====
+      // Digital signature line
+      doc.strokeColor('#cccccc').lineWidth(0.5)
+         .moveTo(50, doc.page.height - 80)
+         .lineTo(doc.page.width - 50, doc.page.height - 80)
+         .stroke();
+
+      doc.fillColor(accentColor).fontSize(10).font('Helvetica-Bold')
+         .text('Digitally Signed & Verified', 0, doc.page.height - 70, { align: 'center' });
+      
+      doc.text('Research, Innovation & Discovery Bharat (RID Bharat)', 0, doc.page.height - 55, { align: 'center' });
+
+      // Verification info
+      doc.fillColor(certificateColor).fontSize(9)
+         .text(`Verify this certificate at: rid-bharat.org/verify | Certificate ID: ${app.appId}`, 0, doc.page.height - 40, { align: 'center' });
+
+      // Office address
+      doc.fillColor(secondaryColor).fontSize(8)
+         .text('Office Address: MiG–72, Sector A, Rajeev Nagar, Ayodhya Nagar, Bhopal, Madhya Pradesh 462021 (India)', 0, doc.page.height - 25, { align: 'center' });
+
+      // Contact info
+      doc.text('Contact: +91 98927 82728 | Email: supportid@gamil.com', 0, doc.page.height - 15, { align: 'center' });
+
+      doc.end();
+
+      stream.on("finish", () => resolve(true));
+      stream.on("error", reject);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+// Generate Experience Letter PDF - User entered duration as is
+async function generateExperienceLetterPDF(app, filePath) {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({ 
+        size: "A4", 
+        margin: 40
+      });
+      
+      const stream = fs.createWriteStream(filePath);
+      doc.pipe(stream);
+
+      // Set colors
+      const primaryColor = '#000000';
+      const secondaryColor = '#666666';
+      const accentColor = '#2c3e50';
+
+      // Add border around the page
+      doc.lineWidth(2);
+      doc.strokeColor('#16a34a');
+      doc.rect(30, 30, doc.page.width - 60, doc.page.height - 60).stroke();
+
+      // Inner border
+      doc.lineWidth(1);
+      doc.strokeColor('#cccccc');
+      doc.rect(35, 35, doc.page.width - 70, doc.page.height - 70).stroke();
+
+      // Get duration details - जो user ने डाला है वही दिखेगा
+      const durationValue = app.duration || "0";
+      const durationUnit = app.durationUnit || "months";
+      const startDate = formatDate(app.startDate);
+      const endDate = formatDate(app.endDate);
+
+      // ===== HEADER SECTION =====
+      // Top left: Registration Number
+      doc.fillColor(secondaryColor).fontSize(10)
+         .text('Registration Number: 048884', 50, 60);
+
+      // Top right: Website
+      doc.text('Website: www.ridbharat.com', 0, 60, { align: 'right' });
+
+      // Center: Organization Name
+      doc.fillColor(accentColor).fontSize(22).font('Helvetica-Bold')
+         .text('Research, Innovation & Discovery Bharat', 0, 90, { align: 'center' });
+
+      // Tagline
+      doc.fillColor(accentColor).fontSize(14)
+         .text('RID Organization, Provides Solutions for Every Problem', 0, 115, { align: 'center' });
+
+      // Managed by and certifications
+      doc.fillColor(secondaryColor).fontSize(10)
+         .text('Managed & Run by TWKSAA Welfare Foundation, Certified by Central Government', 0, 140, { align: 'center' });
+      
+      doc.text('An ISO 9001:2015 Certified Organization', 0, 155, { align: 'center' });
+
+      // Horizontal line
+      doc.strokeColor('#cccccc').lineWidth(1)
+         .moveTo(50, 170)
+         .lineTo(doc.page.width - 50, 170)
          .stroke();
 
       // Issue Date and IEL Number
       const issueDate = formatDate(new Date());
       doc.fillColor(primaryColor).fontSize(11)
-         .text(`Issue Date: ${issueDate}`, 50, 180);
+         .text(`Issue Date: ${issueDate}`, 50, 190);
       
-      doc.text(`IEL Number: ${app.appId}`, 0, 180, { align: 'right' });
+      doc.text(`IEL Number: ${app.appId}`, 0, 190, { align: 'right' });
+
+      // Duration Line (NEW - Added as per requirement)
+      doc.fillColor(accentColor).fontSize(11).font('Helvetica-Bold')
+         .text(`Duration: ${durationValue} ${durationUnit} (${startDate} to ${endDate})`, 0, 210, { align: 'center' });
 
       // Certificate Title
       doc.fillColor(accentColor).fontSize(28).font('Helvetica-Bold')
-         .text('Internship Experience Letter', 0, 220, { align: 'center' });
+         .text('Internship Experience Letter', 0, 240, { align: 'center' });
 
       // ===== BODY CONTENT =====
       // To: Address section
       doc.fillColor(primaryColor).fontSize(12)
-         .text('To', 50, 280);
+         .text('To,', 50, 300);
       
-      doc.text(`${app.fullName},`, 80, 280);
-      doc.text(`S/O ${app.fatherName},`, 80, 300);
-      doc.text(`Bhopal, Madhya Pradesh`, 80, 320);
+      doc.text(`${app.fullName},`, 80, 320);
+      doc.text(`S/O ${app.fatherName},`, 80, 340);
+      doc.text(`Bhopal, Madhya Pradesh`, 80, 360);
 
       // Subject line
       doc.fillColor(accentColor).fontSize(12).font('Helvetica-Bold')
-         .text(`Sub: Experience Letter of Internship Completion at RID Bharat.`, 50, 360);
+         .text(`Subject: Experience Letter of Internship Completion at RID Bharat.`, 50, 400);
 
-      // Main content
-      const durationText = formatDuration(app.duration);
-      const startDate = formatDate(app.startDate);
-      const endDate = formatDate(app.endDate);
-      
+      // Main content - User entered duration is used exactly as entered
       doc.fillColor(primaryColor).fontSize(12)
-         .text(`This is to certify that ${app.fullName} has completed his/her ${durationText} internship with us, from ${startDate} to ${endDate}.`, 50, 400, {
+         .text(`This is to certify that ${app.fullName} has completed his/her ${durationValue} ${durationUnit} internship with us, from ${startDate} to ${endDate}.`, 50, 440, {
            align: 'left',
            width: doc.page.width - 100
          });
 
-      doc.text(`As part of his/her internship, he/she has worked on "${app.projectName}" in RID Bharat Project.`, 50, 440, {
+      doc.text(`As part of his/her internship, he/she has worked on "${app.projectName}" in RID Bharat Project.`, 50, 480, {
         align: 'left',
         width: doc.page.width - 100
       });
 
-      doc.text(`During the tenure with us, we found ${app.fullName}, sincere and result oriented.`, 50, 480, {
+      doc.text(`During the tenure with us, we found ${app.fullName}, sincere and result oriented.`, 50, 520, {
         align: 'left',
         width: doc.page.width - 100
       });
 
-      doc.text(`We wish ${app.fullName}, all the best for his/her future endeavors.`, 50, 520, {
+      doc.text(`We wish ${app.fullName}, all the best for his/her future endeavors.`, 50, 560, {
         align: 'left',
         width: doc.page.width - 100
       });
 
       // ===== SIGNATURE SECTION =====
+      const signatureY = 630;
       doc.fillColor(primaryColor).fontSize(12)
-         .text('Best Regards,', 50, 580);
+         .text('Best Regards,', 50, signatureY);
 
-      // Signature area
-      const signatureY = 620;
+      // Random names array
+      const randomNames = [
+        "Er. Rajesh Prasad",
+        "Er. Deepak Kumar"
+      ];
+      
+      // Pick random name
+      const randomIndex = Math.floor(Math.random() * randomNames.length);
+      const randomName = randomNames[randomIndex];
+
+      // Signature area with random name
       doc.fontSize(14).font('Helvetica-Bold')
-         .text('Er. Rajesh Prasad', 50, signatureY);
+         .text(randomName, 50, signatureY + 30);
       
       doc.fontSize(12).font('Helvetica')
-         .text('CEO & Director', 50, signatureY + 20);
+         .text('CEO & Director', 50, signatureY + 50);
       
-      doc.text('(RID Bharat Bhopal)', 50, signatureY + 40);
+      doc.text('(RID Bharat Bhopal)', 50, signatureY + 70);
 
       // Signature line
       doc.strokeColor('#000000').lineWidth(1)
-         .moveTo(50, signatureY - 5)
-         .lineTo(250, signatureY - 5)
+         .moveTo(50, signatureY + 25)
+         .lineTo(250, signatureY + 25)
          .stroke();
 
-      // Seal placeholder
+      // Right side: Stamp/Seal area
       doc.fillColor(secondaryColor).fontSize(10)
-         .text('Authority Seal Here (If Applicable)', doc.page.width - 250, signatureY + 20, {
-           width: 200,
+         .text('Authorized Stamp & Signature', doc.page.width - 200, signatureY + 30, {
+           width: 150,
            align: 'center'
          });
+
+      // Draw stamp circle
+      doc.strokeColor('#dc2626').lineWidth(2)
+         .circle(doc.page.width - 125, signatureY + 60, 40)
+         .stroke();
+
+      doc.fillColor('#dc2626').fontSize(8)
+         .text('RID BHARAT', doc.page.width - 125, signatureY + 55, {
+           width: 80,
+           align: 'center'
+         });
+      
+      doc.text('OFFICIAL', doc.page.width - 125, signatureY + 65, {
+        width: 80,
+        align: 'center'
+      });
 
       // ===== FOOTER =====
       // Digital signature line
@@ -480,94 +736,8 @@ async function generateCertificatePDF(app, filePath) {
       doc.fillColor(secondaryColor).fontSize(9)
          .text('Office Address: MiG–72, Sector A, Rajeev Nagar, Ayodhya Nagar, Bhopal, Madhya Pradesh 462021 (India)', 0, doc.page.height - 30, { align: 'center' });
 
-      doc.end();
-
-      stream.on("finish", () => resolve(true));
-      stream.on("error", reject);
-    } catch (err) {
-      reject(err);
-    }
-  });
-}
-
-// Generate Creative PDF Certificate (Original Design)
-async function generateCreativeCertificatePDF(app, filePath) {
-  return new Promise((resolve, reject) => {
-    try {
-      const doc = new PDFDocument({ 
-        size: "A4", 
-        margin: 0,
-        layout: 'landscape'
-      });
-      
-      const stream = fs.createWriteStream(filePath);
-      doc.pipe(stream);
-
-      // Background color gradient
-      const gradient = doc.linearGradient(0, 0, doc.page.width, doc.page.height);
-      gradient.stop(0, '#f0f9ff')
-             .stop(1, '#e0f2fe');
-      doc.rect(0, 0, doc.page.width, doc.page.height).fill(gradient);
-
-      // Decorative border
-      doc.lineWidth(8);
-      doc.strokeColor('#16a34a');
-      doc.roundedRect(20, 20, doc.page.width - 40, doc.page.height - 40, 10).stroke();
-
-      // Header with logo placeholder
-      doc.fillColor('#166534').fontSize(42).font('Helvetica-Bold')
-         .text('CERTIFICATE OF COMPLETION', 0, 80, { align: 'center' });
-      
-      doc.fillColor('#374151').fontSize(18).font('Helvetica')
-         .text('Research Innovation & Discovery (RID)', 0, 130, { align: 'center' });
-      
-      doc.fontSize(14)
-         .text('TWKSAA Welfare Foundation', 0, 160, { align: 'center' });
-
-      // Main content box
-      doc.fillColor('#ffffff').roundedRect(40, 200, doc.page.width - 80, 280, 10).fill();
-      
-      doc.fillColor('#111827').fontSize(22)
-         .text('This is to certify that', 0, 240, { align: 'center' });
-
-      // Name in big bold letters
-      doc.fillColor('#166534').fontSize(36).font('Helvetica-Bold')
-         .text(app.fullName.toUpperCase(), 0, 280, { align: 'center' });
-      
-      doc.fillColor('#111827').fontSize(18)
-         .text(`Son/Daughter of ${app.fatherName}`, 0, 330, { align: 'center' });
-
-      // Course details
-      doc.fontSize(16)
-         .text(`has successfully completed the ${app.course} course`, 0, 370, { align: 'center' });
-      
-      doc.fontSize(16)
-         .text(`with project "${app.projectName}"`, 0, 400, { align: 'center' });
-      
-      doc.fontSize(16)
-         .text(`Duration: ${app.duration} weeks (${app.startDate} to ${app.endDate})`, 0, 430, { align: 'center' });
-
-      // Certificate ID
-      doc.fillColor('#4b5563').fontSize(14)
-         .text(`Certificate ID: ${app.appId}`, 0, 480, { align: 'center' });
-
-      // Footer with signatures
-      const yPos = doc.page.height - 100;
-      doc.fillColor('#111827').fontSize(14);
-      
-      // Left signature
-      doc.text('_________________________', 100, yPos);
-      doc.text('Authorized Signatory', 100, yPos + 20);
-      doc.text('RID Bharat', 100, yPos + 40);
-
-      // Right signature
-      doc.text('_________________________', doc.page.width - 200, yPos);
-      doc.text('Training Head', doc.page.width - 200, yPos + 20);
-      doc.text('Date: ' + new Date().toLocaleDateString(), doc.page.width - 200, yPos + 40);
-
-      // Bottom decorative element
-      doc.fillColor('#16a34a').fontSize(12)
-         .text('Certificate Verified Online at: rid-bharat.org/verify', 0, doc.page.height - 40, { align: 'center' });
+      // Contact info
+      doc.text('Contact: +91 98927 82728 | Email: supportid@gamil.com', 0, doc.page.height - 15, { align: 'center' });
 
       doc.end();
 

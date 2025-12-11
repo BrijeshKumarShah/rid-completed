@@ -186,6 +186,8 @@
   </div>
 
   <script>
+
+// verify.html के JavaScript में यह फंक्शन अपडेट करें
 async function verify() {
   const appId = document.getElementById("appIdInput").value.trim();
   
@@ -205,11 +207,19 @@ async function verify() {
         downloadBtn.href = `/api/download/${appId}`;
         downloadBtn.style.display = "inline-flex";
         
+        // Update download text based on certificate type
+        if (data.certificateType === 'EXPERIENCE_LETTER') {
+          downloadBtn.innerHTML = '<span class="material-symbols-outlined">download</span>Download Experience Letter';
+        } else {
+          downloadBtn.innerHTML = '<span class="material-symbols-outlined">download</span>Download Certificate';
+        }
+        
         // Show success message
         document.getElementById("result").innerHTML = `
           <div style="color: #16a34a; font-weight: bold;">
             ✅ Certificate Verified! Ready to download.
           </div>
+          <p>Certificate Type: <strong>${data.certificateType === 'CERTIFICATE_OF_COMPLETION' ? 'Certificate of Completion' : 'Experience Letter'}</strong></p>
         `;
         document.getElementById("result").style.display = "block";
         
@@ -218,12 +228,7 @@ async function verify() {
         document.getElementById("detailCertificateId").textContent = data.applicationId;
         document.getElementById("detailInternName").textContent = data.name;
         document.getElementById("detailIssueDate").textContent = new Date().toLocaleDateString();
-        document.getElementById("detailDescription").textContent = `Certificate for ${data.course} - ${data.projectName}`;
-        
-        // Enable download via ID button
-        document.getElementById("downloadById").onclick = function() {
-          window.location.href = `/api/download/${appId}`;
-        };
+        document.getElementById("detailDescription").textContent = `${data.certificateType === 'CERTIFICATE_OF_COMPLETION' ? 'Certificate' : 'Experience Letter'} for ${data.course} - ${data.projectName} (${data.duration} weeks)`;
         
       } else {
         document.getElementById("result").innerHTML = `
@@ -245,19 +250,9 @@ async function verify() {
     }
   } catch (error) {
     console.error(error);
-    alert("Yore verifying certificate Successfull.");
+    alert("Error verifying certificate. Please try again.");
   }
 }
-
-// Auto-focus on input
-document.getElementById("appIdInput").focus();
-
-// Enter key support
-document.getElementById("appIdInput").addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    verify();
-  }
-});
 </script>
 </body>
 

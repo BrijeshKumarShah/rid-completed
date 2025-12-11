@@ -6,9 +6,11 @@ const applicationSchema = new mongoose.Schema({
   fatherName: String,
   dob: String,
   course: String,
+  certificateType: String,
   phone: String,
   email: String,
-  duration: String,
+  duration: String, // Changed back to String to store "2 months" or "8 weeks"
+  durationUnit: String, // Added to store unit: "months" or "weeks"
   startDate: String,
   endDate: String,
   projectName: String,

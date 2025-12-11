@@ -330,7 +330,5 @@ configureRoutes();
 // ========== START SERVER ==========
 app.listen(port, () => {
   console.log(`\n✅ Server is running on http://localhost:${port}`);
-  console.log(`📚 Ebook section: http://localhost:${port}/ebook`);
-  console.log(`📜 Certificate section: http://localhost:${port}/certificate`);
-  console.log(`📝 Apply certificate: http://localhost:${port}/apply-certificate`);
+  
 });
