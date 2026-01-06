@@ -393,3 +393,95 @@ body .container #form-last span a {
     font-size: 14px;
   }
 }
+ .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .form-group span {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      font-size: 0.75em;
+      color: red;
+      display: none;
+    }
+
+    #firstNameError,
+    #lastNameError,
+    #emailError,
+    #error-msg,
+    #phoneError {
+      font-size: 0.75em;
+      color: red;
+    }
+    /* ===== MOBILE FIX FOR 360px ===== */
+@media (max-width: 420px) {
+
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  .headings h1 {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .headings h3 {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .container {
+    flex-direction: column !important;
+    width: 100% !important;
+    padding: 15px !important;
+  }
+
+  .img {
+    width: 100% !important;
+    margin-bottom: 15px;
+  }
+
+  #form1,
+  #form3 {
+    width: 100% !important;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  button,
+  #nextButton,
+  #sumit-btn,
+  #PreviousBtn {
+    width: 100% !important;
+    margin-top: 10px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Process bar fix */
+  .container-process {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .line-1 {
+    transform: scale(0.85);
+  }
+}
