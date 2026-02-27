@@ -1386,12 +1386,15 @@
 </head>
 
 <body>
+<audio id="backgroundMusic" autoplay loop muted preload="auto">
+    <source src="/audio/b.mp3" type="audio/mpeg">
+</audio>
     <!-- Letter Popup Modal -->
     <div class="letter-popup-container" id="letterPopup">
         <div class="letter-popup-content">
             <button class="close-popup-btn" id="closePopupBtn" aria-label="Close popup">
                 <i class="fas fa-times"></i>
-            </button>
+           
             <div class="letter-content">
                 <h2>मेरे प्रिय,</h2>
 
@@ -1511,15 +1514,14 @@
         <div class="footer-content">
             <div class="footer-column">
                 <h3>हमारा प्यारा रिश्ता</h3>
-                <p>
-                    <!-- बहुत सोच कर सोचा है अब किनारा कर लिया जाय । अब तेरी यादों से ही गुजरा कर लिया जाय । एक वक्त था जब
-                    अजनबी थे हम दोनो । वही हाल अब फिर से दुबारा कर दिया जाए ।। -->
+                <p >
+                 
                 </p>
                 <div class="love-meter">
                     <div class="love-fill" id="loveFill"></div>
                 </div>
                 <p style="color: #ffcc00; font-family: 'Dancing Script', cursive; font-size: 1.3rem; text-align: center;">
-                    प्यार का स्तर: अनंत
+                    "दिल से निकली बात" <p style="text-align: center;"><%= gift.message %></p>
                 </p>
             </div>
             <div class="footer-column">
@@ -1567,9 +1569,7 @@
         </p>
     </div>
 </div>
-
     </footer>
-
     <script>
         // DOM Elements
         const hamburger = document.getElementById('hamburger');
@@ -1591,6 +1591,75 @@
         const letterPopup = document.getElementById('letterPopup');
         const openLetterTrigger = document.getElementById('openLetterTrigger');
         const closePopupBtn = document.getElementById('closePopupBtn');
+
+// ============ AUDIO CODE - पेज ओपन होते ही बजेगा ============
+document.addEventListener("DOMContentLoaded", function() {
+
+    const audio = document.getElementById("backgroundMusic");
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    if (!audio) {
+        console.error("❌ Audio element not found!");
+        return;
+    }
+
+    audio.loop = true;
+    audio.volume = 0.5;
+    audio.muted = false;   // 🔴 IMPORTANT: false रखना
+
+    let isPlaying = false;
+
+    // ✅ तुरंत चलाने की कोशिश
+    function tryAutoPlay() {
+        audio.play().then(() => {
+            isPlaying = true;
+            console.log("✅ ऑडियो चल रहा है!");
+        }).catch(err => {
+            console.log("⚠️ ऑटोप्ले ब्लॉक हुआ, क्लिक का इंतज़ार...");
+            
+            // क्लिक पर चलाओ
+            const playOnClick = () => {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    console.log("✅ क्लिक करने पर चल गया!");
+                });
+                document.removeEventListener("click", playOnClick);
+                document.removeEventListener("touchstart", playOnClick);
+            };
+            
+            document.addEventListener("click", playOnClick);
+            document.addEventListener("touchstart", playOnClick);
+        });
+    }
+
+    // थोड़ी देर बाद try करो (पेज पूरा लोड हो जाए)
+    setTimeout(tryAutoPlay, 500);
+
+    // ✅ नेविगेशन पर ऑडियो रोकना
+    navLinks.forEach(link => {
+        link.addEventListener("click", function() {
+            const href = this.getAttribute("href");
+            if (href && !href.startsWith("#") && href !== "#") {
+                audio.pause();
+                audio.currentTime = 0;
+                isPlaying = false;
+            }
+        });
+    });
+
+    // ✅ टैब visibility handle
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden) {
+            audio.pause();
+        } else if (isPlaying) {
+            audio.play();
+        }
+    });
+
+});
+
+// 🔴 नीचे और कुछ मत लगाना - बस इतना ही काफी है
+
 
         // State variables
         let isMenuOpen = false;

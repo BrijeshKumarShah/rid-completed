@@ -243,7 +243,7 @@
                     <!-- ================= Planning ================= -->
                     <li class="nav-section-title">Planning</li>
 
-                    <li class="nav-item locked" id="nav-calendar">
+                <li class="nav-item locked" id="nav-cdar">
                         <a href="#">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Calendar</span>
@@ -1225,12 +1225,438 @@
                     <div class="settings-container">
                         <!-- Profile Settings -->
                         <div class="card">
+<<<<<<< HEAD
+                            <h3><i class="fas fa-book"></i> Saved Topics</h3>
+                            <p style="color:#7f8c8d;">No syllabus topics added yet.</p>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Section -->
+                    <div id="calendar-section" class="hidden">
+                        <div class="lock-overlay" id="calendar-lock">
+                            <div class="lock-message">
+                                <div class="lock-icon-large">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3>Calendar Locked</h3>
+                                <p>This feature is only available after payment.</p>
+                                <button class="btn btn-primary" id="goto-payment-from-calendar">
+                                    <i class="fas fa-credit-card"></i> Go to Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="page-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <h2>Teaching Calendar</h2>
+                        </div>
+
+                        <div class="card">
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                                <button class="btn btn-secondary" id="prev-month">‹ Prev</button>
+                                <h3 id="calendar-month"></h3>
+                                <button class="btn btn-secondary" id="next-month">Next ›</button>
+                            </div>
+
+                            <div id="calendar-grid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px;">
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-list"></i> Events</h3>
+                            <div id="event-list">
+                                <p style="color:#7f8c8d;">No events added.</p>
+                            </div>
+                        </div>
+                    </div>
+
+<!------------------birthday-->
+<!-- ==================== Birthday Software Section ==================== -->
+<section id="birthday-section" class="hidden">
+      <!-- Birthday Website Page (Replaced Calendar) -->
+    <!-- Birthday Website Page (Complete with Popup Modal) -->
+<div class="calendar-page" id="calendarPage">
+   
+
+    <!-- Load Font Awesome (optional but recommended) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <div class="birthday-header">
+        <h2>
+            <span>🎂</span> Create a Beautiful Birthday Website <span>🎂</span>
+        </h2>
+        <p>Fill the details below and generate a surprise birthday page</p>
+    </div>
+
+    <div class="calendar-container">
+        <div class="form-container">
+            <form id="giftForm" enctype="multipart/form-data">
+                <!-- Birthday Person's Name -->
+                <div class="form-group">
+                    <label>Birthday Person's Name</label>
+                    <input type="text" name="didiName" class="form-control" placeholder="Enter name" required>
+                </div>
+
+                <!-- Your Message -->
+                <div class="form-group">
+                    <label>Your Message</label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="Enter your birthday message" required></textarea>
+                </div>
+
+                <!-- Birthday Person Photo -->
+                <div class="form-group">
+                    <label>Birthday Person Photo</label>
+                    <input type="file" name="didiImage" class="form-control" accept="image/*" id="didiImage" required>
+                    <div class="file-name-display" id="didiImageName">
+                        <i class="fas fa-image"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <!-- Your Photo (Optional) -->
+                <div class="form-group">
+                    <label>Your Photo (Optional)</label>
+                    <input type="file" name="jijaImage" class="form-control" accept="image/*" id="jijaImage">
+                    <div class="file-name-display" id="jijaImageName">
+                        <i class="fas fa-image"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <!-- Birthday Song (Optional) -->
+                <div class="form-group">
+                    <label>Birthday Song (Optional)</label>
+                    <input type="file" name="song" class="form-control" accept="audio/*" id="songFile">
+                    <div class="file-name-display" id="songFileName">
+                        <i class="fas fa-music"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="createBirthdayBtn">
+                    Create Birthday Website
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Birthday Website Popup Modal -->
+    <div class="birthday-modal" id="birthdayModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBirthdayModal()" aria-label="Close modal">&times;</button>
+            
+            <div class="modal-header">
+                <div class="emoji">🎉</div>
+                <h3>Website Ready!</h3>
+            </div>
+            
+            <div class="modal-body">
+                <p>Your birthday website has been created successfully!</p>
+                
+                <div class="link-container">
+                    <input type="text" id="modalGeneratedLink" readonly>
+                </div>
+                
+         <!-- Modal Buttons Container - All in One Line -->
+<div class="modal-buttons inline-buttons">
+    <!-- Copy Link Button -->
+    <button class="copy-btn" onclick="copyBirthdayLink()">
+        <i class="fas fa-copy"></i>
+        <span>Copy Link</span>
+    </button>
+    
+    <!-- Open Link Button -->
+    <button class="open-btn" onclick="openBirthdayWebsite()">
+        <i class="fas fa-external-link-alt"></i>
+        <span>Open</span>
+    </button>
+    
+    <!-- Share via WhatsApp Button -->
+    <button class="whatsapp-btn" onclick="shareOnWhatsApp()">
+        <i class="fab fa-whatsapp"></i>
+        <span>Share</span>
+    </button>
+    
+    <!-- Close Modal Button -->
+    <button class="close-btn" onclick="closeBirthdayModal()">
+        <i class="fas fa-times"></i>
+        <span>Close</span>
+    </button>
+</div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<!-- ==================== End Birthday Software Section ==================== -->
+                    <!-- Python Test Service Section -->
+                    <div id="python-service-section" class="hidden">
+                        <div class="lock-overlay" id="python-service-lock">
+                            <div class="lock-message">
+                                <div class="lock-icon-large">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3>Python Service Locked</h3>
+                                <p>This feature is only available after payment.</p>
+                                <p>Please complete the payment to access Python Test Service.</p>
+                                <button class="btn btn-primary" style="margin-top: 20px;" id="goto-payment-from-python">
+                                    <i class="fas fa-credit-card"></i> Go to Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="page-title">
+                            <i class="fab fa-python"></i>
+                            <h2>Python Test Service</h2>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-folder"></i> Transloter desbords</h3>
+                            <p>Transloter desbords contain this files .</p>
+                        </div>
+                    </div>
+
+                    <!-- Calculator Section -->
+                    <div id="calculator-section" class="hidden">
+                        <div class="lock-overlay" id="calculator-lock">
+                            <div class="lock-message">
+                                <div class="lock-icon-large">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3>Calculator Locked</h3>
+                                <p>This feature is only available after payment.</p>
+                                <button class="btn btn-primary" id="goto-payment-from-calculator">
+                                    <i class="fas fa-credit-card"></i> Go to Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="page-title">
+                            <i class="fas fa-calculator"></i>
+                            <h2>Calculator</h2>
+                        </div>
+
+                        <div class="card">
+                            <input type="text" id="calc-display" style="width:100%; padding:10px; font-size:1.2rem;"
+                                readonly>
+
+                            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:10px;">
+                                <button onclick="calc('7')">7</button>
+                                <button onclick="calc('8')">8</button>
+                                <button onclick="calc('9')">9</button>
+                                <button onclick="calc('/')">÷</button>
+
+                                <button onclick="calc('4')">4</button>
+                                <button onclick="calc('5')">5</button>
+                                <button onclick="calc('6')">6</button>
+                                <button onclick="calc('*')">×</button>
+
+                                <button onclick="calc('1')">1</button>
+                                <button onclick="calc('2')">2</button>
+                                <button onclick="calc('3')">3</button>
+                                <button onclick="calc('-')">−</button>
+
+                                <button onclick="calc('0')">0</button>
+                                <button onclick="calc('.')">.</button>
+                                <button onclick="calculate()">=</button>
+                                <button onclick="calc('+')">+</button>
+
+                                <button onclick="clearCalc()" style="grid-column:span 4;">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Alerts Section -->
+                    <div id="alerts-section" class="hidden">
+                        <div class="lock-overlay" id="alerts-lock">
+                            <div class="lock-message">
+                                <div class="lock-icon-large">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3>Email Alerts Locked</h3>
+                                <p>This feature is only available after payment.</p>
+                                <button class="btn btn-primary" id="goto-payment-from-alerts">
+                                    <i class="fas fa-credit-card"></i> Go to Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="page-title">
+                            <i class="fas fa-envelope"></i>
+                            <h2>Email / SMS Alerts</h2>
+                        </div>
+                        <form id="email-form">
+
+                            <div class="card">
+                                <h3><i class="fas fa-paper-plane"></i> Send Email to Student</h3>
+
+                                <div class="form-group">
+                                    <label>From (Teacher Email)</label>
+                                    <input type="email" id="teacher-email" value="<%= teacher.email %>" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Student Email</label>
+                                    <input type="email" id="student-email" placeholder="Enter student email">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <input type="text" id="email-subject" placeholder="Enter subject">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea id="email-message" rows="4"
+                                        placeholder="Write your message..."></textarea>
+                                </div>
+
+                                <button class="btn btn-primary" id="send-email-btn">
+                                    <i class="fas fa-paper-plane"></i> Send Email
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <!-- Analytics Section -->
+                    <div id="analytics-section" class="hidden">
+                        <div class="lock-overlay" id="analytics-lock">
+                            <div class="lock-message">
+                                <div class="lock-icon-large">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3>Analytics Locked</h3>
+                                <p>This feature is only available after payment.</p>
+                                <p>Please complete the payment to access Result Sections .</p>
+                                <button class="btn btn-primary" style="margin-top: 20px;"
+                                    id="goto-payment-from-analytics">
+                                    <i class="fas fa-credit-card"></i> Go to Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="page-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <h2>Result Sections</h2>
+                        </div>
+
+                        <!-- Professional Analytics Card -->
+                        <div class="card analytics-card">
+                            <h3><i class="fas fa-chart-pie"></i> Performance Analytics</h3>
+                            <p>
+                                View detailed analytics about your tests, student performance,
+                                and engagement metrics.
+                            </p>
+
+                            <div class="analytics-table-wrapper">
+                                <table class="analytics-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Test Name</th>
+                                            <th>Subject</th>
+                                            <th>Students</th>
+                                            <th>Avg Score</th>
+                                            <th>Time</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="analytics-cards-container">
+                                        <tr>
+                                            <td colspan="7" class="analytics-loading">
+                                                <i class="fas fa-spinner fa-spin"></i> Loading analytics...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Settings Section -->
+                    <div id="settings-section" class="hidden">
+                        <div class="lock-overlay" id="settings-lock">
+                            <div class="lock-message">
+                                <div class="lock-icon-large">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3>Settings Locked</h3>
+                                <p>This feature is only available after payment.</p>
+                                <p>Please complete the payment to access settings.</p>
+                                <button class="btn btn-primary" style="margin-top: 20px;"
+                                    id="goto-payment-from-settings">
+                                    <i class="fas fa-credit-card"></i> Go to Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="page-title">
+                            <i class="fas fa-cog"></i>
+                            <h2>Settings</h2>
+                        </div>
+
+                        <div class="settings-container">
+                            <!-- Profile Settings -->
+                            <div class="card">
+                                <h3><i class="fas fa-user-circle"></i> Profile Settings</h3>
+                                <div class="profile-settings">
+                                    <div class="profile-image-container">
+                                        <img id="profile-image" class="profile-image" src="" alt="Profile Photo">
+                                        <button class="profile-upload-btn" id="uploadProfileBtn">
+                                            <i class="fas fa-camera"></i>
+                                        </button>
+                                        <input type="file" id="profile-photo-input" class="file-input" accept="image/*">
+                                    </div>
+                                    <div class="profile-info">
+                                        <p><strong>Name:</strong>
+                                            <%= teacher.name %>
+                                        </p>
+                                        <p><strong>Email:</strong>
+                                            <%= teacher.email %>
+                                        </p>
+
+                                        <p><strong>Account Type:</strong> <span id="settings-account-type">Free
+                                                Account</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Settings -->
+                            <div class="card">
+                                <h3><i class="fas fa-user-cog"></i> Account Settings</h3>
+                                <form class="settings-form">
+                                    <div class="form-group">
+                                        <label for="display-name">Display Name</label>
+                                        <input type="text" id="display-name" value="<%= teacher.name %>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email">Email Address</label>
+                                        <input type="email" id="email" value="<%= teacher.email %>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="timezone">Timezone</label>
+                                        <select id="timezone">
+                                            <option value="UTC-5">Eastern Time (ET)</option>
+                                            <option value="UTC-6">Central Time (CT)</option>
+                                            <option value="UTC-7">Mountain Time (MT)</option>
+                                            <option value="UTC-8" selected>Pacific Time (PT)</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="save-profile-btn">
+                                        <i class="fas fa-save"></i> Save Profile Changes
+=======
                             <h3><i class="fas fa-user-circle"></i> Profile Settings</h3>
                             <div class="profile-settings">
                                 <div class="profile-image-container">
                                     <img id="profile-image" class="profile-image" src="" alt="Profile Photo">
                                     <button class="profile-upload-btn" id="uploadProfileBtn">
                                         <i class="fas fa-camera"></i>
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849
                                     </button>
                                     <input type="file" id="profile-photo-input" class="file-input" accept="image/*">
                                 </div>

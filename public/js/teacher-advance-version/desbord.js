@@ -2442,6 +2442,10 @@ function setupThemeControls() {
 
 //=================================================research papper sections 
 
+<<<<<<< HEAD
+function research(){
+    window.location.href="/teacher-research-papper"
+=======
 function addResearchCard(data) {
     const container = document.getElementById("research-cards-container");
     if (!container) return;
@@ -2466,6 +2470,7 @@ function addResearchCard(data) {
     `;
 
     container.prepend(card);
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849
 }
 async function research() {
     const subject = document.getElementById("research-subject").value.trim();
