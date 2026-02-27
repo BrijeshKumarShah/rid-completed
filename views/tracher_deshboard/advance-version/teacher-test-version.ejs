@@ -243,7 +243,7 @@
                     <!-- ================= Planning ================= -->
                     <li class="nav-section-title">Planning</li>
 
-                    <li class="nav-item locked" id="nav-calendar">
+                <li class="nav-item locked" id="nav-cdar">
                         <a href="#">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Calendar</span>
@@ -934,8 +934,125 @@
                         </div>
                     </div>
 
+<!------------------birthday-->
+<!-- ==================== Birthday Software Section ==================== -->
+<section id="birthday-section" class="hidden">
+      <!-- Birthday Website Page (Replaced Calendar) -->
+    <!-- Birthday Website Page (Complete with Popup Modal) -->
+<div class="calendar-page" id="calendarPage">
+   
 
+    <!-- Load Font Awesome (optional but recommended) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <div class="birthday-header">
+        <h2>
+            <span>🎂</span> Create a Beautiful Birthday Website <span>🎂</span>
+        </h2>
+        <p>Fill the details below and generate a surprise birthday page</p>
+    </div>
+
+    <div class="calendar-container">
+        <div class="form-container">
+            <form id="giftForm" enctype="multipart/form-data">
+                <!-- Birthday Person's Name -->
+                <div class="form-group">
+                    <label>Birthday Person's Name</label>
+                    <input type="text" name="didiName" class="form-control" placeholder="Enter name" required>
+                </div>
+
+                <!-- Your Message -->
+                <div class="form-group">
+                    <label>Your Message</label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="Enter your birthday message" required></textarea>
+                </div>
+
+                <!-- Birthday Person Photo -->
+                <div class="form-group">
+                    <label>Birthday Person Photo</label>
+                    <input type="file" name="didiImage" class="form-control" accept="image/*" id="didiImage" required>
+                    <div class="file-name-display" id="didiImageName">
+                        <i class="fas fa-image"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <!-- Your Photo (Optional) -->
+                <div class="form-group">
+                    <label>Your Photo (Optional)</label>
+                    <input type="file" name="jijaImage" class="form-control" accept="image/*" id="jijaImage">
+                    <div class="file-name-display" id="jijaImageName">
+                        <i class="fas fa-image"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <!-- Birthday Song (Optional) -->
+                <div class="form-group">
+                    <label>Birthday Song (Optional)</label>
+                    <input type="file" name="song" class="form-control" accept="audio/*" id="songFile">
+                    <div class="file-name-display" id="songFileName">
+                        <i class="fas fa-music"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="createBirthdayBtn">
+                    Create Birthday Website
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Birthday Website Popup Modal -->
+    <div class="birthday-modal" id="birthdayModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBirthdayModal()" aria-label="Close modal">&times;</button>
+            
+            <div class="modal-header">
+                <div class="emoji">🎉</div>
+                <h3>Website Ready!</h3>
+            </div>
+            
+            <div class="modal-body">
+                <p>Your birthday website has been created successfully!</p>
+                
+                <div class="link-container">
+                    <input type="text" id="modalGeneratedLink" readonly>
+                </div>
+                
+         <!-- Modal Buttons Container - All in One Line -->
+<div class="modal-buttons inline-buttons">
+    <!-- Copy Link Button -->
+    <button class="copy-btn" onclick="copyBirthdayLink()">
+        <i class="fas fa-copy"></i>
+        <span>Copy Link</span>
+    </button>
+    
+    <!-- Open Link Button -->
+    <button class="open-btn" onclick="openBirthdayWebsite()">
+        <i class="fas fa-external-link-alt"></i>
+        <span>Open</span>
+    </button>
+    
+    <!-- Share via WhatsApp Button -->
+    <button class="whatsapp-btn" onclick="shareOnWhatsApp()">
+        <i class="fab fa-whatsapp"></i>
+        <span>Share</span>
+    </button>
+    
+    <!-- Close Modal Button -->
+    <button class="close-btn" onclick="closeBirthdayModal()">
+        <i class="fas fa-times"></i>
+        <span>Close</span>
+    </button>
+</div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<!-- ==================== End Birthday Software Section ==================== -->
                     <!-- Python Test Service Section -->
                     <div id="python-service-section" class="hidden">
                         <div class="lock-overlay" id="python-service-lock">

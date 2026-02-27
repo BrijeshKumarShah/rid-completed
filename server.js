@@ -1,19 +1,18 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const passport = require("passport");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
-const helmet = require('helmet');
-const MongoStore = require('connect-mongo');
+const helmet = require("helmet");
+const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const crypto = require("crypto");
 const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const nodemailer = require("nodemailer");
 const dashboardRoutes = require("./routes/dashboard-count-all-system.js");
-
 
 // Load environment variables
 dotenv.config();
@@ -22,110 +21,116 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 9191;
 
-
 const http = require("http");
 const server = http.createServer(app);
 
-
 const mongoUrl = process.env.MONGODB_URI;
 
-console.log('🔗 Attempting MongoDB Atlas connection...');
+console.log("🔗 Attempting MongoDB Atlas connection...");
 
-mongoose.connect(mongoUrl, {
+mongoose
+  .connect(mongoUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
-})
-.then(async () => {
-    console.log('✅ MongoDB Atlas Connected Successfully');
-   
-    
+  })
+  .then(async () => {
+    console.log("✅ MongoDB Atlas Connected Successfully");
+
     // Check if 'applications' collection exists
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    const appCollectionExists = collections.some(c => c.name === 'applications');
-    
+    const collections = await mongoose.connection.db
+      .listCollections()
+      .toArray();
+    const appCollectionExists = collections.some(
+      (c) => c.name === "applications",
+    );
+
     if (!appCollectionExists) {
-        console.log('📝 Creating applications collection...');
-        // Create collection if it doesn't exist
-        await mongoose.connection.db.createCollection('applications');
-        console.log('✅ Created applications collection');
+      console.log("📝 Creating applications collection...");
+      // Create collection if it doesn't exist
+      await mongoose.connection.db.createCollection("applications");
+      console.log("✅ Created applications collection");
     }
-    
+
     // Create indexes for better performance
-    const Application = require('./models/Application');
+    const Application = require("./models/Application");
     await Application.createIndexes();
-    
-})
-.catch(err => {
-    console.error(' MongoDB Atlas Connection Error:', err.message);
-    console.error(' Troubleshooting Steps:');
-    console.error('   1. Check your MongoDB Atlas cluster is running');
-    console.error('   2. Verify IP is whitelisted in Network Access');
-    console.error('   3. Check username/password in connection string');
-    console.error('   4. Check database name in connection string');
+  })
+  .catch((err) => {
+    console.error(" MongoDB Atlas Connection Error:", err.message);
+    console.error(" Troubleshooting Steps:");
+    console.error("   1. Check your MongoDB Atlas cluster is running");
+    console.error("   2. Verify IP is whitelisted in Network Access");
+    console.error("   3. Check username/password in connection string");
+    console.error("   4. Check database name in connection string");
     process.exit(1);
-});
+  });
 
 // ========== SESSION CONFIGURATION ==========
-app.use(session({
-    secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString("hex"),
+app.use(
+  session({
+    secret:
+      process.env.SESSION_SECRET || crypto.randomBytes(64).toString("hex"),
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-        mongoUrl: mongoUrl,
-        collectionName: 'sessions',
-        ttl: 24 * 60 * 60 // 1 day in seconds
+      mongoUrl: mongoUrl,
+      collectionName: "sessions",
+      ttl: 24 * 60 * 60, // 1 day in seconds
     }),
     cookie: {
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production'
-    }
-}));
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    },
+  }),
+);
 
 // ========== SECURITY MIDDLEWARE ==========
-app.use(helmet({
-    contentSecurityPolicy: false // Temporarily disable for debugging
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Temporarily disable for debugging
+  }),
+);
 
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-app.use('/ebook/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use(
+  "/ebook/uploads",
+  express.static(path.join(__dirname, "public/uploads")),
+);
 
 // ========== CREATE UPLOAD DIRECTORIES ==========
 const ensureUploadDirs = () => {
-    const directories = [
-        'public/uploads/pdfs',
-        'public/uploads/covers'
-    ];
+  const directories = ["public/uploads/pdfs", "public/uploads/covers"];
 
-    directories.forEach(dir => {
-        const fullPath = path.join(__dirname, dir);
-        if (!fs.existsSync(fullPath)) {
-            fs.mkdirSync(fullPath, { recursive: true });
-            console.log(`✅ Created directory: ${fullPath}`);
-        } else {
-            console.log(`📁 Directory exists: ${fullPath}`);
-        }
-    });
+  directories.forEach((dir) => {
+    const fullPath = path.join(__dirname, dir);
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
+      console.log(`✅ Created directory: ${fullPath}`);
+    } else {
+      console.log(`📁 Directory exists: ${fullPath}`);
+    }
+  });
 };
 ensureUploadDirs();
 
 // ========== ADDITIONAL MIDDLEWARE ==========
 const configureMiddleware = () => {
   app.use(cookieParser());
-  
+
   app.use(
     fileUpload({
       useTempFiles: true,
       tempFileDir: "/tmp/",
       limits: { fileSize: 100 * 1024 * 1024 },
-    })
+    }),
   );
-  
+
   app.use(passport.initialize());
   app.use(passport.session());
   require("./config/passport")(passport);
@@ -134,18 +139,21 @@ const configureMiddleware = () => {
 // ========== VIEW ENGINE SETUP ==========
 const configureViews = () => {
   app.set("view engine", "ejs");
-  app.set("views", [path.join(__dirname, "views", 'ebook'), path.join(__dirname, "views")]);
+  app.set("views", [
+    path.join(__dirname, "views", "ebook"),
+    path.join(__dirname, "views"),
+  ]);
   app.use(express.static(path.join(__dirname, "public")));
 };
 
 // ========== GLOBAL VARIABLES MIDDLEWARE ==========
 app.use((req, res, next) => {
-    res.locals.currentPath = req.path;
-    res.locals.success = req.query.success;
-    res.locals.error = req.query.error;
-    res.locals.user = req.user || req.session.user || null;
-    res.locals.basePath = '/ebook';
-    next();
+  res.locals.currentPath = req.path;
+  res.locals.success = req.query.success;
+  res.locals.error = req.query.error;
+  res.locals.user = req.user || req.session.user || null;
+  res.locals.basePath = "/ebook";
+  next();
 });
 
 // ========== INITIALIZE SECURITY STORAGE ==========
@@ -153,12 +161,12 @@ app.locals.securityEvents = new Map();
 app.locals.pdfTokens = new Map();
 
 // ========== EBOOK ROUTES ==========
-app.use('/ebook', require('./routes/pdfRoutes'));
-app.use('/ebook', require('./routes/authebookRoutes'));
+app.use("/ebook", require("./routes/pdfRoutes"));
+app.use("/ebook", require("./routes/authebookRoutes"));
 
 // ========== WORKSHOP ROUTES (MOVE HERE) ==========
-const workshopRoutes = require('./routes/workshopRoutes');
-app.use('/api/workshop', workshopRoutes);
+const workshopRoutes = require("./routes/workshopRoutes");
+app.use("/api/workshop", workshopRoutes);
 app.use("/api/course", require("./RTS/routes/courseRoutes.js"));
 // ========== MAIN APPLICATION ROUTES ==========
 const configureRoutes = () => {
@@ -182,48 +190,49 @@ const configureRoutes = () => {
   app.use("/api/user", userRoutes);
 
   // ========== SECURE PDF ACCESS ==========
-  app.use('/ebook/uploads/pdfs', (req, res, next) => {
-      const referer = req.get('Referer');
-      if (!referer || (!referer.includes('/ebook/secure-viewer/') && !referer.includes('/ebook/download/'))) {
-          return res.status(403).json({ 
-              error: 'Access denied',
-              message: 'Direct file access is not allowed. Please use the secure viewer.'
-          });
-      }
-      next();
+  app.use("/ebook/uploads/pdfs", (req, res, next) => {
+    const referer = req.get("Referer");
+    if (
+      !referer ||
+      (!referer.includes("/ebook/secure-viewer/") &&
+        !referer.includes("/ebook/download/"))
+    ) {
+      return res.status(403).json({
+        error: "Access denied",
+        message:
+          "Direct file access is not allowed. Please use the secure viewer.",
+      });
+    }
+    next();
   });
 
+  // Socket.IO
+  const { Server } = require("socket.io");
+  const io = new Server(server, {
+    cors: { origin: "*" },
+  });
 
-// Socket.IO
-const { Server } = require("socket.io");
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
-
-// socket logic
-let onlineTestUsers = 0;
-io.on("connection", (socket) => {
-  onlineTestUsers++;
-  io.emit("onlineUsers", onlineTestUsers);
-
-  socket.on("disconnect", () => {
-    onlineTestUsers--;
+  // socket logic
+  let onlineTestUsers = 0;
+  io.on("connection", (socket) => {
+    onlineTestUsers++;
     io.emit("onlineUsers", onlineTestUsers);
+
+    socket.on("disconnect", () => {
+      onlineTestUsers--;
+      io.emit("onlineUsers", onlineTestUsers);
+    });
   });
-});
 
-// 🔥 IMPORTANT PART
-app.listen = function () {
-  return server.listen.apply(server, arguments);
-};
-
-
-
+  // 🔥 IMPORTANT PART
+  app.listen = function () {
+    return server.listen.apply(server, arguments);
+  };
 
   // ========== RTS INTEGRATION ==========
   app.use("/RTS/public", express.static(path.join(__dirname, "RTS", "public")));
   app.use("/rts", express.static(path.join(__dirname, "RTS", "public")));
-  
+
   app.get("/rts/main", (req, res) => {
     res.sendFile(path.join(__dirname, "RTS", "public", "main.html"));
   });
@@ -280,28 +289,47 @@ app.listen = function () {
     res.redirect("/login");
   };
 
-  app.get("/organisation", authenticateJWT, roleMiddleware("organisation"), (req, res) => {
-    res.render("register-org");
-  });
+  app.get(
+    "/organisation",
+    authenticateJWT,
+    roleMiddleware("organisation"),
+    (req, res) => {
+      res.render("register-org");
+    },
+  );
 
-  app.get("/teacher", authenticateJWT, roleMiddleware("teacher"), (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "teacher.html"));
-  });
+  app.get(
+    "/teacher",
+    authenticateJWT,
+    roleMiddleware("teacher"),
+    (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "teacher.html"));
+    },
+  );
 
-  app.get("/student", authenticateJWT, roleMiddleware("student"), (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "student.html"));
-  });
+  app.get(
+    "/student",
+    authenticateJWT,
+    roleMiddleware("student"),
+    (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "student.html"));
+    },
+  );
 
   app.get("/admin", authenticateJWT, roleMiddleware("admin"), (req, res) => {
     res.sendFile(path.join(__dirname, "public", "Admin/admin.html"));
   });
 
   app.get("/reset-password", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "Reset-Password/reset-password.html"));
+    res.sendFile(
+      path.join(__dirname, "public", "Reset-Password/reset-password.html"),
+    );
   });
 
   app.get("/forgot-password", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "Forgot-Password/forgot-password.html"));
+    res.sendFile(
+      path.join(__dirname, "public", "Forgot-Password/forgot-password.html"),
+    );
   });
 
   app.get("/form", (req, res) => {
@@ -317,7 +345,9 @@ app.listen = function () {
   });
 
   app.get("/verify", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "Certificate-Verification/verify.html"));
+    res.sendFile(
+      path.join(__dirname, "public", "Certificate-Verification/verify.html"),
+    );
   });
 
   // ========== WORKSHOP FORM PAGE ==========
@@ -339,11 +369,23 @@ app.listen = function () {
 
   // ========== CERTIFICATE STATIC ROUTES ==========
   app.get("/certificate", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "Certificate-Verification/certificate.html"));
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "Certificate-Verification/certificate.html",
+      ),
+    );
   });
 
   app.get("/apply-certificate", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "Certificate-Verification/Applay-certificate.html"));
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "Certificate-Verification/Applay-certificate.html",
+      ),
+    );
   });
 
   app.get("/ebook", (req, res) => {
@@ -390,7 +432,7 @@ configureViews();
 
 // ======= RTS AUTH ROUTES (MUST BE BEFORE 404) =======
 const signupRoutes = require("./RTS/routes/signupRoutes.js");
-const loginRoutes  = require("./RTS/routes/loginRoutes.js");
+const loginRoutes = require("./RTS/routes/loginRoutes.js");
 const forgotPasswordRoutes = require("./RTS/routes/forgotPasswordRoutes.js");
 
 app.use("/api", signupRoutes);
@@ -410,13 +452,9 @@ const authenticateJWT = require("./middleware/authMiddleware");
 const teacherAnalyticsRoutes = require("./routes/teacherAnalytics");
 
 // 🔥 AUTH REQUIRED FOR ANALYTICS
-app.use(
-  "/api/teacher/analytics",
-  authenticateJWT,
-  teacherAnalyticsRoutes
-);
+app.use("/api/teacher/analytics", authenticateJWT, teacherAnalyticsRoutes);
 
-// pdf downloads 
+// pdf downloads
 const teacherAnalyticsRoutess = require("./routes/teacherAnalyticsRoutes");
 app.use(teacherAnalyticsRoutess);
 
@@ -424,37 +462,36 @@ app.get("/ebook", (req, res) => {
   res.render("ebook/dashboard");
 });
 
-
 // advance version routes
 const teacherTestApi = require("./routes/teacherTestApi");
 app.use("/api/teacher-tests", teacherTestApi);
 
 app.post("/api/send-email", async (req, res) => {
-    const { studentEmail, subject, message } = req.body;
+  const { studentEmail, subject, message } = req.body;
 
-    try {
-        const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
-            secure: false,
-            auth: {
-                user: process.env.SMTP_USERNAME,
-                pass: process.env.SMTP_PASSWORD
-            }
-        });
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USERNAME,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
 
-        await transporter.sendMail({
-            from: process.env.SMTP_FROM_EMAIL,
-            to: studentEmail,
-            subject: subject,
-            text: message
-        });
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM_EMAIL,
+      to: studentEmail,
+      subject: subject,
+      text: message,
+    });
 
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Email error:", err);
-        res.json({ success: false });
-    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Email error:", err);
+    res.json({ success: false });
+  }
 });
 const teacherTests = require("./routes/teacherTests");
 app.use("/teacher-tests", teacherTests);
@@ -465,10 +502,23 @@ app.use("/ai", aiRoutes);
 const AddvanceAnalyticsRoutes = require("./routes/Add-versionAnalyticsRoutes.js");
 app.use("/api/teacher/analytics", AddvanceAnalyticsRoutes);
 app.use("/dashboard", dashboardRoutes);
-app.get("/research-papper",(req,res)=>{
-  res.render("tracher_deshboard/advance-version/Research-papper/index.ejs")
-})
-// ======= MAIN ROUTES (404 is inside this) =======
+app.get("/teacher-research-papper", (req, res) => {
+  res.render("tracher_deshboard/advance-version/Research-papper/index.ejs");
+});
+// ======= Research paper route (404 is inside this) =============
+app.get("/research-paper", (req, res) => {
+  res.render("Research_dashboard/home.ejs");
+});
+//==Research paper create account ====
+app.get("/research-create", (req, res) => {
+  res.render("Research_dashboard/Authentication/create.ejs");
+});
+
+//==REsearch singup ==
+app.get("/research-login", (req, res) => {
+  res.render("Research_dashboard/Authentication/login.ejs");
+});
+
 configureRoutes();
 
 // ========== START SERVER ==========

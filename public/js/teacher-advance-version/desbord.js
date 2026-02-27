@@ -2461,6 +2461,6 @@ function setupThemeControls() {
 //=================================================research papper sections 
 
 function research(){
-    window.location.href="/research-papper"
+    window.location.href="/teacher-research-papper"
 }
  

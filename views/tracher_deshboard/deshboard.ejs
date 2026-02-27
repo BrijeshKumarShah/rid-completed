@@ -595,56 +595,119 @@
 
     <!-- Calendar Page -->
     <!-- Birthday Website Page (Replaced Calendar) -->
-    <div class="calendar-page" id="calendarPage">
+    <!-- Birthday Website Page (Complete with Popup Modal) -->
+<div class="calendar-page" id="calendarPage">
+   
 
-        <div style="text-align:center; margin-bottom:25px;">
-            <h2 style="color:#ff6b81;">🎂 Create a Beautiful Birthday Website</h2>
-            <p style="color:#666;">Fill the details below and generate a surprise birthday page</p>
-        </div>
+    <!-- Load Font Awesome (optional but recommended) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-        <div class="calendar-container" style="max-width:700px; margin:auto;">
-            <div class="form-container">
-                <form id="giftForm" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label>Birthday Person's Name</label>
-                        <input type="text" name="didiName" class="form-control" required>
-                    </div>
+    <div class="birthday-header">
+        <h2>
+            <span>🎂</span> Create a Beautiful Birthday Website <span>🎂</span>
+        </h2>
+        <p>Fill the details below and generate a surprise birthday page</p>
+    </div>
 
-                    <div class="form-group">
-                        <label>Your Message</label>
-                        <textarea name="message" class="form-control" rows="4" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Birthday Person Photo</label>
-                        <input type="file" name="didiImage" class="form-control" accept="image/*" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Your Photo (Optional)</label>
-                        <input type="file" name="jijaImage" class="form-control" accept="image/*">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Birthday Song (Optional)</label>
-                        <input type="file" name="song" class="form-control" accept="audio/*">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width:100%;">
-                        Create Birthday Website
-                    </button>
-                </form>
-
-                <div id="result" style="display:none; margin-top:20px;">
-                    <h3>🎉 Website Ready!</h3>
-                    <input type="text" id="generatedLink" class="form-control" readonly>
-                    <button onclick="copyLink()" class="btn btn-outline" style="margin-top:10px;">
-                        Copy Link
-                    </button>
+    <div class="calendar-container">
+        <div class="form-container">
+            <form id="giftForm" enctype="multipart/form-data">
+                <!-- Birthday Person's Name -->
+                <div class="form-group">
+                    <label>Birthday Person's Name</label>
+                    <input type="text" name="didiName" class="form-control" placeholder="Enter name" required>
                 </div>
+
+                <!-- Your Message -->
+                <div class="form-group">
+                    <label>Your Message</label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="Enter your birthday message" required></textarea>
+                </div>
+
+                <!-- Birthday Person Photo -->
+                <div class="form-group">
+                    <label>Birthday Person Photo</label>
+                    <input type="file" name="didiImage" class="form-control" accept="image/*" id="didiImage" required>
+                    <div class="file-name-display" id="didiImageName">
+                        <i class="fas fa-image"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <!-- Your Photo (Optional) -->
+                <div class="form-group">
+                    <label>Your Photo (Optional)</label>
+                    <input type="file" name="jijaImage" class="form-control" accept="image/*" id="jijaImage">
+                    <div class="file-name-display" id="jijaImageName">
+                        <i class="fas fa-image"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <!-- Birthday Song (Optional) -->
+                <div class="form-group">
+                    <label>Birthday Song (Optional)</label>
+                    <input type="file" name="song" class="form-control" accept="audio/*" id="songFile">
+                    <div class="file-name-display" id="songFileName">
+                        <i class="fas fa-music"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="createBirthdayBtn">
+                    Create Birthday Website
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Birthday Website Popup Modal -->
+    <div class="birthday-modal" id="birthdayModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBirthdayModal()" aria-label="Close modal">&times;</button>
+            
+            <div class="modal-header">
+                <div class="emoji">🎉</div>
+                <h3>Website Ready!</h3>
+            </div>
+            
+            <div class="modal-body">
+                <p>Your birthday website has been created successfully!</p>
+                
+                <div class="link-container">
+                    <input type="text" id="modalGeneratedLink" readonly>
+                </div>
+                
+         <!-- Modal Buttons Container - All in One Line -->
+<div class="modal-buttons inline-buttons">
+    <!-- Copy Link Button -->
+    <button class="copy-btn" onclick="copyBirthdayLink()">
+        <i class="fas fa-copy"></i>
+        <span>Copy Link</span>
+    </button>
+    
+    <!-- Open Link Button -->
+    <button class="open-btn" onclick="openBirthdayWebsite()">
+        <i class="fas fa-external-link-alt"></i>
+        <span>Open</span>
+    </button>
+    
+    <!-- Share via WhatsApp Button -->
+    <button class="whatsapp-btn" onclick="shareOnWhatsApp()">
+        <i class="fab fa-whatsapp"></i>
+        <span>Share</span>
+    </button>
+    
+    <!-- Close Modal Button -->
+    <button class="close-btn" onclick="closeBirthdayModal()">
+        <i class="fas fa-times"></i>
+        <span>Close</span>
+    </button>
+</div>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Settings Page -->
     <div class="settings-page" id="settingsPage">
@@ -2450,7 +2513,7 @@
                 `;
                 optionsList.appendChild(optionDiv);
             });
-
+           
             // Question type change handler
             document.getElementById('questionType').addEventListener('change', function () {
                 const type = this.value;
@@ -2535,28 +2598,176 @@
 
             initializeStudentsPage();
         });
-        document.addEventListener("submit", async function (e) {
-            if (e.target.id === "giftForm") {
-                e.preventDefault();
+        // Birthday Website Functions
+document.addEventListener("submit", async function (e) {
+    if (e.target.id === "giftForm") {
+        e.preventDefault();
 
-                const formData = new FormData(e.target);
+        const generateBtn = document.getElementById('createBirthdayBtn');
+        const originalText = generateBtn.innerHTML;
+        
+        // Show loading
+        generateBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
+        generateBtn.disabled = true;
 
-                const res = await fetch("/create-gift", {
-                    method: "POST",
-                    body: formData
-                });
+        try {
+            const formData = new FormData(e.target);
 
-                const data = await res.json();
+            const res = await fetch("/create-gift", {
+                method: "POST",
+                body: formData
+            });
 
+            const data = await res.json();
+
+            if (data.success) {
                 const link = window.location.origin + data.url;
-
-                document.getElementById("generatedLink").value = link;
-                document.getElementById("result").style.display = "block";
-
-                // ❌ auto open removed
-                // window.open(link, "_blank");
+                
+                // Update modal link
+                document.getElementById("modalGeneratedLink").value = link;
+                
+                // Show modal
+                document.getElementById("birthdayModal").classList.add('active');
+                
+                // Show success toast
+                if (typeof showToast === 'function') {
+                    showToast('Success', 'Birthday website created!', 'success');
+                }
+            } else {
+                if (typeof showToast === 'function') {
+                    showToast('Error', data.message || 'Failed to create website', 'error');
+                } else {
+                    alert('Failed to create website: ' + (data.message || 'Unknown error'));
+                }
             }
+        } catch (error) {
+            console.error('Error:', error);
+            if (typeof showToast === 'function') {
+                showToast('Error', 'Something went wrong. Please try again.', 'error');
+            } else {
+                alert('Something went wrong. Please try again.');
+            }
+        } finally {
+            // Reset button
+            generateBtn.innerHTML = originalText;
+            generateBtn.disabled = false;
+        }
+    }
+});
+
+// Modal functions
+window.copyBirthdayLink = function() {
+    const linkInput = document.getElementById('modalGeneratedLink');
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999);
+    
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                if (typeof showToast === 'function') {
+                    showToast('Copied!', 'Link copied to clipboard', 'success');
+                }
+            });
+        } else {
+            document.execCommand('copy');
+            if (typeof showToast === 'function') {
+                showToast('Copied!', 'Link copied to clipboard', 'success');
+            }
+        }
+    } catch (err) {
+        console.error('Copy failed:', err);
+    }
+};
+
+window.openBirthdayWebsite = function() {
+    const link = document.getElementById('modalGeneratedLink').value;
+    window.open(link, '_blank');
+};
+
+window.closeBirthdayModal = function() {
+    document.getElementById('birthdayModal').classList.remove('active');
+};
+
+// File name display
+document.addEventListener('DOMContentLoaded', function() {
+    // Show file names when selected
+    const didiImage = document.getElementById('didiImage');
+    const jijaImage = document.getElementById('jijaImage');
+    const songFile = document.getElementById('songFile');
+    
+    if (didiImage) {
+        didiImage.addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+            const span = document.querySelector('#didiImageName span');
+            if (span) span.textContent = fileName;
         });
+    }
+    
+    if (jijaImage) {
+        jijaImage.addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+            const span = document.querySelector('#jijaImageName span');
+            if (span) span.textContent = fileName;
+        });
+    }
+    
+    if (songFile) {
+        songFile.addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+            const span = document.querySelector('#songFileName span');
+            if (span) span.textContent = fileName;
+        });
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('birthdayModal');
+        if (e.target === modal) {
+            closeBirthdayModal();
+        }
+    });
+    // WhatsApp Share Function - YAHAN ADD KARO
+window.shareOnWhatsApp = function() {
+    const link = document.getElementById('modalGeneratedLink').value;
+    
+    // Birthday person ka name le lo agar available ho
+    let name = '';
+    const nameInput = document.querySelector('input[name="didiName"]');
+    if (nameInput && nameInput.value) {
+        name = nameInput.value + ' ke liye ';
+    }
+    
+    const message = encodeURIComponent(`🎂 ${name}Birthday Website! 🎉\n\n${link}\n\nMade with love ❤️`);
+    
+    // Detect if mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // Create WhatsApp URL based on device
+    let whatsappUrl;
+    if (isMobile) {
+        // Mobile device - try to open WhatsApp app
+        whatsappUrl = `whatsapp://send?text=${message}`;
+    } else {
+        // Desktop - open WhatsApp Web
+        whatsappUrl = `https://web.whatsapp.com/send?text=${message}`;
+    }
+    
+    // Try to open WhatsApp
+    const newWindow = window.open(whatsappUrl, '_blank');
+    
+    // Fallback if popup blocked or fails
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        const fallbackUrl = `https://wa.me/?text=${message}`;
+        window.open(fallbackUrl, '_blank');
+    }
+    
+    // Show toast message
+    if (typeof showToast === 'function') {
+        showToast('WhatsApp', 'Opening WhatsApp...', 'info');
+    }
+};
+});
+        
         function logout() {
             window.location.href = "index.html";
         }
