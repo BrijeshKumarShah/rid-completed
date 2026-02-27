@@ -738,20 +738,20 @@ function setupEventListeners() {
         }
 
         // ✅ RESULT BUTTON (ADD THIS HERE)
-       // RESULT BUTTON → open analytics section
-if (e.target.classList.contains('result-btn') || e.target.closest('.result-btn')) {
-    const button = e.target.closest('.result-btn');
-    const testId = button.dataset.id;
+        // RESULT BUTTON → open analytics section
+        if (e.target.classList.contains('result-btn') || e.target.closest('.result-btn')) {
+            const button = e.target.closest('.result-btn');
+            const testId = button.dataset.id;
 
-    // analytics section open karo
-    showAnalyticsSection();
+            // analytics section open karo
+            showAnalyticsSection();
 
-    // analytics load karo specific test ke liye
-    loadAnalyticsCards();
+            // analytics load karo specific test ke liye
+            loadAnalyticsCards();
 
-    // optionally testId store kar lo
-    state.currentAnalyticsTest = testId;
-}
+            // optionally testId store kar lo
+            state.currentAnalyticsTest = testId;
+        }
 
 
     });
@@ -829,40 +829,41 @@ if (e.target.classList.contains('result-btn') || e.target.closest('.result-btn')
     }
 
 }
-sendEmailBtn.addEventListener('click', async () => {
-    const studentEmail = document.getElementById('student-email').value;
-    const subject = document.getElementById('email-subject').value;
-    const message = document.getElementById('email-message').value;
+if (sendEmailBtn) {
+    sendEmailBtn.addEventListener('click', async () => {
+        const studentEmail = document.getElementById('student-email').value;
+        const subject = document.getElementById('email-subject').value;
+        const message = document.getElementById('email-message').value;
 
-    if (!studentEmail || !subject || !message) {
-        alert("Please fill all fields.");
-        return;
-    }
-
-    try {
-        const res = await fetch("/api/send-email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ studentEmail, subject, message })
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-            alert("Email sent successfully!");
-
-            // ✅ FORM RESET CODE
-            document.getElementById('student-email').value = "";
-            document.getElementById('email-subject').value = "";
-            document.getElementById('email-message').value = "";
-        } else {
-            alert("Email failed.");
+        if (!studentEmail || !subject || !message) {
+            alert("Please fill all fields.");
+            return;
         }
-    } catch (err) {
-        console.error(err);
-        alert("Server error.");
-    }
-});
+
+        try {
+            const res = await fetch("/api/send-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ studentEmail, subject, message })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                alert("Email sent successfully!");
+                document.getElementById('student-email').value = "";
+                document.getElementById('email-subject').value = "";
+                document.getElementById('email-message').value = "";
+            } else {
+                alert("Email failed.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Server error.");
+        }
+    });
+}
+
 
 
 // Handle profile photo upload
@@ -1957,7 +1958,7 @@ async function translateAuto() {
 async function loadTestsFromDB() {
     try {
         const res = await fetch("/teacher-tests/api/my-tests");
-;
+        ;
         const tests = await res.json();
 
         coursesData.length = 0;
@@ -2419,25 +2420,6 @@ function applyTheme(theme) {
     localStorage.setItem("dashboardTheme", theme);
 }
 
-function loadSavedTheme() {
-    const savedTheme = localStorage.getItem("dashboardTheme") || "light";
-    applyTheme(savedTheme);
-
-    const radio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
-    if (radio) radio.checked = true;
-}
-
-function setupThemeControls() {
-    const themeRadios = document.querySelectorAll('input[name="theme"]');
-
-    themeRadios.forEach(radio => {
-        radio.addEventListener("change", () => {
-            applyTheme(radio.value);
-        });
-    });
-}
-
-
 // Load saved theme
 function loadSavedTheme() {
     const savedTheme = localStorage.getItem("dashboardTheme") || "light";
@@ -2460,7 +2442,84 @@ function setupThemeControls() {
 
 //=================================================research papper sections 
 
+<<<<<<< HEAD
 function research(){
     window.location.href="/teacher-research-papper"
+=======
+function addResearchCard(data) {
+    const container = document.getElementById("research-cards-container");
+    if (!container) return;
+
+    const card = document.createElement("div");
+    card.className = "col-md-4";
+
+    card.innerHTML = `
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">${data.title || "Research Paper"}</h5>
+                <p class="card-text">
+                    <strong>Author:</strong> ${data.author || "-"}<br>
+                    <strong>Year:</strong> ${data.year || "-"}<br>
+                    <strong>Subject:</strong> ${data.subject || "-"}
+                </p>
+                <a href="${data.fileUrl}" target="_blank" class="btn btn-primary btn-sm">
+                    View Paper
+                </a>
+            </div>
+        </div>
+    `;
+
+    container.prepend(card);
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849
 }
- 
+async function research() {
+    const subject = document.getElementById("research-subject").value.trim();
+    const title = document.getElementById("research-title").value.trim();
+    const author = document.getElementById("research-author").value.trim();
+    const year = document.getElementById("research-year").value.trim();
+    const journal = document.getElementById("research-journal").value.trim();
+    const access = document.getElementById("research-access").value;
+    const fileInput = document.getElementById("research-file");
+
+    if (!subject || !title || !author || !year) {
+        alert("Please fill all required fields.");
+        return;
+    }
+
+    if (!fileInput.files.length) {
+        alert("Please select a PDF file.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("subject", subject);
+    formData.append("title", title);
+    formData.append("author", author);
+    formData.append("year", year);
+    formData.append("journal", journal);
+    formData.append("access", access);
+    formData.append("file", fileInput.files[0]);
+
+    try {
+        const res = await fetch("/api/research/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            alert("Research paper uploaded successfully!");
+            window.location.href = "/research-papper";
+        } else {
+            alert(data.message || "Upload failed");
+        }
+    } catch (err) {
+        console.error("Upload error:", err);
+        alert("Server error");
+    }
+}
+function previous(){
+    window.location.href="/previous-year-paper";
+}
+

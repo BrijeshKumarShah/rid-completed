@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>papers · fixed header · scroll cards</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #d9e9ff, #b5d0f0);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 0; /* remove padding for full width header */
+        }
+
+        /* main wrapper – full width with top padding for fixed header */
+        .creative-wrapper {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px 25px;
+            /* background: rgba(255, 255, 255, 0.3); */
+            /* backdrop-filter: blur(8px); removed for clarity, keep subtle */
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 0px;
+            box-shadow: 0 15px 30px -15px rgba(0, 20, 40, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        /* FIXED HEADER – stays on top while cards scroll */
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2000;
+            background: linear-gradient(145deg, #256480, #32799e);
+            padding: 8px 25px;
+            box-shadow: 0 6px 12px -6px #02121f, 0 0 0 2px #ffffffcc inset;
+            border-bottom: 1px solid #b8dfff;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .icon-flat {
+            font-size: 2rem;
+            background: #ffdbb5;
+            color: #10344b;
+            padding: 8px;
+            border-radius: 0px;
+            box-shadow: 0 4px 0 #7f623b, 0 6px 8px -4px black;
+        }
+
+        .title-flat h1 {
+            font-size: clamp(1.2rem, 4vw, 1.7rem);
+            font-weight: 700;
+            color: white;
+            text-shadow: 1px 2px 0 #15384f;
+            letter-spacing: -0.2px;
+            line-height: 1.2;
+        }
+
+        .title-flat span {
+            font-size: 0.75rem;
+            color: #ffecb3;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* header button – teal */
+        .upload-btn-header {
+            background: #6ec1b0;
+            padding: 8px 18px;
+            border-radius: 0px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0b2a35;
+            box-shadow: 0 4px 0 #3e7a6c, 0 0 0 2px white inset;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.08s;
+            border: none;
+            white-space: nowrap;
+        }
+        .upload-btn-header i {
+            color: #0b2a35;
+        }
+        .upload-btn-header:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #3e7a6c, 0 0 0 2px white inset;
+        }
+
+        /* push content below fixed header */
+        .content-below-header {
+            margin-top: 90px; /* enough space for fixed header */
+        }
+
+        /* cards container – scrollable area */
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 15px 0;
+            max-height: none; /* natural flow, scrolls with page */
+        }
+
+        /* cards – slightly rounded, same dimensions */
+        .card-soft {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            width: min(280px, 100%);
+            flex: 0 1 280px;
+            padding: 18px 12px 15px;
+            border-radius: 18px;
+            box-shadow: 0 10px 15px -8px #0a2e44, 0 0 0 2px white inset, 0 0 0 4px #1e6085 inset;
+            transition: 0.15s;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-soft:hover {
+            transform: scale(1.01);
+            box-shadow: 0 12px 18px -8px #0f3550, 0 0 0 2px white inset, 0 0 0 5px #1e6a9b inset;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            background: #214f72;
+            color: white;
+            padding: 12px;
+            border-radius: 14px;
+            box-shadow: 0 5px 0 #0c3147, 0 6px 10px -4px black;
+            margin-top: -5px;
+        }
+
+        .card-soft h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0b2f45;
+            text-shadow: 1px 2px 0 #bedcff;
+            margin: 2px 0;
+        }
+
+        .card-badge {
+            background: #1d577b;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 0 #0e3349;
+            border: 2px solid white;
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 6px;
+            width: 100%;
+            margin: 8px 0 5px;
+            padding: 0 5px;
+        }
+
+        /* colored action buttons */
+        .card-btn {
+            border: none;
+            background: white;
+            padding: 8px 5px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            box-shadow: 0 3px 0 #a0b9cf;
+            cursor: pointer;
+            border: 1.5px solid #154257;
+            width: 100%;
+            transition: 0.05s;
+            text-transform: capitalize;
+        }
+        .card-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #7f9eb7;
+        }
+
+        .card-btn[data-action="edit"] {
+            background: #f0eefc;
+            border-color: #5f4b9e;
+            color: #4a3780;
+            box-shadow: 0 3px 0 #8a7ab3;
+        }
+        .card-btn[data-action="edit"]:hover {
+            background: #5f4b9e;
+            color: white;
+        }
+        .card-btn[data-action="delete"] {
+            background: #ffeeee;
+            border-color: #c43a3a;
+            color: #b02b2b;
+            box-shadow: 0 3px 0 #d99b9b;
+        }
+        .card-btn[data-action="delete"]:hover {
+            background: #c43a3a;
+            color: white;
+        }
+        .card-btn[data-action="send"] {
+            background: #e3f7ec;
+            border-color: #1e7b4c;
+            color: #16613b;
+            box-shadow: 0 3px 0 #98c7ae;
+        }
+        .card-btn[data-action="send"]:hover {
+            background: #1e7b4c;
+            color: white;
+        }
+        .card-btn[data-action="read"] {
+            background: #f5e9ff;
+            border-color: #9b59b6;
+            color: #7d3c9e;
+            box-shadow: 0 3px 0 #c9a8e0;
+        }
+        .card-btn[data-action="read"]:hover {
+            background: #9b59b6;
+            color: white;
+        }
+
+        /* dashboard */
+        .dash-panel {
+            background: #ffffffdb;
+            backdrop-filter: blur(6px);
+            border-radius: 0px;
+            padding: 18px 20px;
+            margin: 15px 0 10px;
+            box-shadow: 0 10px 20px -10px #102f45, 0 0 0 2px white inset, 0 0 0 4px #29648c inset;
+            display: none;
+        }
+        .dash-panel.visible {
+            display: block;
+        }
+        .stat-modern {
+            background: white;
+            padding: 10px 18px;
+            border-radius: 0px;
+            font-weight: 600;
+            box-shadow: 0 3px 0 #abc0d3;
+            display: inline-flex;
+            gap: 8px;
+            margin: 12px 10px 0 0;
+        }
+        .hide-btn {
+            background: transparent;
+            border: 2px dashed #164f72;
+            padding: 7px 25px;
+            border-radius: 0px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        /* footer – no changes */
+        .footer-compact {
+            background: #1c3d53;
+            border-radius: 0px;
+            padding: 18px 15px 12px;
+            margin-top: 25px;
+            color: #e9f2fa;
+            box-shadow: 0 8px 12px -6px #0b1f2b, 0 0 0 1px #a0c4e2 inset;
+            font-size: 0.8rem;
+            border: 1px solid #779bb5;
+            width: 100%;
+        }
+        .footer-grid-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px 12px;
+        }
+        .footer-section p, .footer-section li {
+            line-height: 1.4;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+        .footer-section ul { list-style: none; padding-left: 0; }
+        .footer-section i { width: 18px; color: #ffdb9f; }
+        .footer-section a { color: white; text-decoration: none; border-bottom: 1px dotted #9ac2e0; }
+        .rid-title-compact { font-size: 1rem; font-weight: 700; color: #ffeba0; margin-bottom: 5px; }
+        .rating-stars-compact { display: flex; gap: 2px; font-size: 1.2rem; color: #f9c74f; margin: 5px 0; }
+        .rating-btn-compact {
+            background: #2d688b; border: none; color: white; padding: 4px 16px; border-radius: 0px;
+            font-weight: 500; font-size: 0.75rem; cursor: pointer; box-shadow: 0 2px 0 #123349;
+            border: 1px solid #b3d6fa;
+        }
+        .footer-bottom-compact {
+            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;
+            margin: 15px 0 5px; border-top: 1px solid #497a9a; padding-top: 12px; font-size: 0.75rem;
+        }
+        .footer-bottom-compact a { color: #d4ecff; text-decoration: none; border-bottom: 1px dotted #5f8db0; }
+
+        /* UPLOAD MODAL – unchanged */
+        .upload-page-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 4000; visibility: hidden; opacity: 0; transition: 0.2s; padding: 15px;
+        }
+        .upload-page-overlay.show { visibility: visible; opacity: 1; }
+        .upload-page-card {
+            background: white; border-radius: 0px; max-width: 600px; width: 100%;
+            padding: 30px; box-shadow: 0 25px 40px -15px black; border: 1px solid #d9e9ff;
+        }
+        .upload-page-card h2 { font-size: 1.8rem; color: #0b2f45; margin-bottom: 25px; border-left: 8px solid #32799e; padding-left: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 500; color: #1d3e55; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px 18px; border: 2px solid #cbdbe9; border-radius: 0px; font-size: 1rem; }
+        .form-control:focus { border-color: #32799e; }
+        .file-upload-area { border: 2px dashed #32799e; border-radius: 0px; padding: 20px; text-align: center; background: #f0f7ff; }
+        .file-name { color: #0b2f45; font-weight: 500; margin-bottom: 10px; }
+        .file-input { display: none; }
+        .file-upload-btn { background: #e4effa; border: 2px solid #32799e; color: #1d4e6b; padding: 10px 25px; border-radius: 0px; font-weight: 600; cursor: pointer; display: inline-block; }
+        .upload-submit-btn { background: #32799e; color: white; border: none; padding: 14px 30px; border-radius: 0px; font-size: 1.2rem; font-weight: 600; width: 100%; cursor: pointer; box-shadow: 0 4px 0 #1b4b66; margin: 20px 0 10px; }
+        .upload-submit-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1b4b66; }
+        .uploaded-papers-section { background: #f0f7fc; border-radius: 0px; padding: 20px; margin-top: 20px; }
+        .no-papers { text-align: center; color: #5b7e9a; font-style: italic; padding: 15px; background: white; border: 1px dashed #8fb0cc; }
+        .close-page-btn { background: transparent; border: 2px solid #32799e; color: #32799e; padding: 10px 25px; border-radius: 0px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; }
+        .close-page-btn:hover { background: #32799e; color: white; }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            .card-soft { width: 260px; flex: 0 1 260px; }
+        }
+        @media (max-width: 500px) {
+            .header-fixed { padding: 8px 15px; }
+            .content-below-header { margin-top: 110px; }
+            .card-soft { width: 100%; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- FIXED HEADER – always on top -->
+    <header class="header-fixed">
+        <div class="brand-group">
+            <i class="fas fa-cubes icon-flat"></i>
+            <div class="title-flat">
+                <h1>PREVIOUS YEAR PAPERS</h1>
+                <span><i class="fas fa-calendar-alt"></i> 2023 · 2024 · 2025</span>
+            </div>
+        </div>
+        <button class="upload-btn-header" id="uploadButtonHeader">
+            <i class="fas fa-cloud-upload-alt"></i> <span>upload paper</span>
+        </button>
+    </header>
+
+    <!-- Main content – pushed below fixed header, cards scroll -->
+    <div class="creative-wrapper content-below-header">
+        <!-- cards container – now with 4 cards (two more added) -->
+
+<div class="cards-container">
+
+    <% if (papers.length === 0) { %>
+        <p style="text-align:center;">No papers uploaded yet.</p>
+    <% } %>
+
+    <% papers.forEach(paper => { %>
+        <div class="card-soft">
+
+            <i class="fas fa-file-pdf card-icon"></i>
+
+            <h2><%= paper.title %></h2>
+
+            <span class="card-badge">
+                <%= new Date(paper.createdAt).toLocaleDateString() %>
+            </span>
+
+            <div class="card-actions">
+
+    <!-- READ -->
+    <a href="/uploads/<%= paper.file %>" 
+       target="_blank"
+       class="card-btn"
+       data-action="read">
+        <i class="fas fa-book-open"></i> read
+    </a>
+
+    <!-- EDIT -->
+    <a href="/edit-paper/<%= paper._id %>"
+       class="card-btn"
+       data-action="edit">
+        <i class="fas fa-edit"></i> edit
+    </a>
+
+    <!-- SEND -->
+    <a href="/send-paper/<%= paper._id %>"
+   class="card-btn"
+   data-action="send">
+   <i class="fas fa-paper-plane"></i> send
+</a>
+
+    <!-- DELETE -->
+    <form action="/delete-paper/<%= paper._id %>" method="POST">
+        <button type="submit"
+                class="card-btn"
+                data-action="delete">
+            <i class="fas fa-trash"></i> delete
+        </button>
+    </form>
+
+</div>
+
+        </div>
+    <% }) %>
+
+</div>
+        <!-- footer -->
+        <footer class="footer-compact">
+            <div class="footer-grid-compact">
+                <div class="footer-section">
+                    <div class="rid-title-compact">Research Innovation & Discovery</div>
+                    <div class="rid-sub-compact">RID</div>
+                    <p><i class="fas fa-map-marker-alt"></i> Mlg. 72, Rajiv Nagar, Bhopal (MP)</p>
+                    <p><i class="fas fa-envelope"></i> ridorg.in@gmail.com</p>
+                    <p><i class="fas fa-phone-alt"></i> +91-9202707903</p>
+                </div>
+                <div class="footer-section">
+                    <h4 style="color:#ffda88;">Topics</h4>
+                    <ul><li>▶ Computers & AI</li><li>▶ Space / Data Science</li><li>▶ Renewable Energy</li></ul>
+                </div>
+                <div class="footer-section">
+                    <h4 style="color:#ffda88;">Quick</h4>
+                    <ul><li><a href="#">About RID</a></li><li><a href="#">Research Papers</a></li><li><a href="#">Innovation Hub</a></li></ul>
+                    <div style="display:flex; gap:12px; margin-top:6px;">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4 style="color:#ffda88;">Rate Us</h4>
+                    <div class="rating-stars-compact">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <button class="rating-btn-compact" onclick="alert('⭐ rating demo')">Submit</button>
+                </div>
+            </div>
+            <div class="footer-bottom-compact">
+                <span>©2024, RID | TWF. All rights reserved.</span>
+            </div>
+            <div class="footer-bottom-compact" style="border-top:none;">
+                <a href="#">About Us</a> | <a href="#">Terms</a> | <a href="#">Privacy</a> | <a href="#">Disclaimer</a> | <a href="#">Contact</a>
+            </div>
+        </footer>
+    </div>
+    
+            <!-- UPLOAD MODAL -->
+<div class="upload-page-overlay" id="uploadModal">
+    <div class="upload-page-card">
+
+        <form action="/upload-previous-paper" method="POST" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label>Paper Title</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label>Upload PDF</label>
+                <div class="file-upload-area">
+                    <div class="file-name" id="fileNameDisplay">No file chosen</div>
+
+                    <input type="file" 
+                           name="previous-file"
+                           id="fileInput" 
+                           class="file-input"
+                           accept="application/pdf" 
+                           required>
+
+                    <label for="fileInput" class="file-upload-btn">
+                        Choose File
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="upload-submit-btn">
+                Upload Paper
+            </button>
+
+        </form>
+
+        <button class="close-page-btn" id="closeModalBtn">Close</button>
+
+    </div>
+</div>
+
+    <script>
+(function() {
+
+    const uploadBtn = document.getElementById('uploadButtonHeader');
+    const modal = document.getElementById('uploadModal');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const fileInput = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('fileNameDisplay');
+
+    // Open modal
+    uploadBtn.addEventListener('click', () => modal.classList.add('show'));
+
+    // Close modal
+    closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+
+    // Close when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('show');
+    });
+
+    // Show selected file name
+    fileInput.addEventListener('change', function() {
+        fileNameSpan.textContent = this.files?.[0]?.name || 'No file chosen';
+    });
+
+    // ESC key close
+    window.addEventListener('keydown', e => {
+        if (e.key === 'Escape') modal.classList.remove('show');
+    });
+
+    // ✅ SEND BUTTON CONFIRMATION (YAHI ADD KARNA THA)
+    const sendButtons = document.querySelectorAll('[data-action="send"]');
+
+    sendButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (!confirm("Are you sure you want to send this paper?")) {
+                e.preventDefault();
+            }
+        });
+    });
+
+})();
+</script>
+</body>
+</html>

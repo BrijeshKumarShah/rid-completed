@@ -5,5 +5,6 @@ const organisationController = require('../controllers/organisationController');
 
 // Route to handle organization creation
 //router.post('/organisation', organisationController.createOrganisation);
-router.post('/organisation', organisationController.createOrganisation);
+router.post('/organisation', organisationController.registerOrganisation);
+
 module.exports = router;

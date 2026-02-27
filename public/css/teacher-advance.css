@@ -2083,3 +2083,133 @@ body.dark-theme .btn-primary {
 body.dark-theme .btn-success {
     background: #27ae60;
 }
+
+/* yha pe teacher dashboard ka previous year paper ka button add kr rhe go to dashboard */
+.page-title{
+    display: flex;
+    align-items: center;
+}
+
+.page-title button{
+    margin-left: auto;
+    padding: 6px 14px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: .2s;
+}
+
+.page-title button span{
+    font-size: 12px;
+}
+
+.page-title button:hover{
+    background: #1e40af;
+}
+/* ye footer ka code h */
+.footer-compact {
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 0px;
+            /* SQUARE (was 30/15) */
+            padding: 18px 15px 12px;
+            margin-top: 25px;
+            color: #e9f2fa;
+            box-shadow: 0 8px 12px -6px #0b1f2b, 0 0 0 1px #a0c4e2 inset;
+            font-size: 0.8rem;
+            border: 1px solid #779bb5;
+            width: 100%;
+        }
+
+        .footer-grid-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px 12px;
+            align-items: start;
+        }
+
+        .footer-section p,
+        .footer-section li {
+            line-height: 1.4;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .footer-section i {
+            width: 18px;
+            color: #ffdb9f;
+        }
+
+        .footer-section a {
+            color: white !important;
+            text-decoration: none;
+            border-bottom: 1px dotted #9ac2e0;
+        }
+
+        .footer-section a:hover {
+            color: #ffeba0 !important;
+        }
+
+        .rid-title-compact {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffeba0;
+            margin-bottom: 5px;
+        }
+
+        .rid-sub-compact {
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: #c5defa;
+        }
+
+        .rating-stars-compact {
+            display: flex;
+            gap: 2px;
+            font-size: 1.2rem;
+            color: #f9c74f;
+            margin: 5px 0 3px;
+        }
+
+        .rating-btn-compact {
+            background: #2d688b;
+            border: none;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 0px;
+            /* SQUARE */
+            font-weight: 500;
+            font-size: 0.75rem;
+            margin: 5px 0;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #123349;
+            border: 1px solid #b3d6fa;
+        }
+
+        .footer-bottom-compact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 15px 0 5px;
+            border-top: 1px solid #497a9a;
+            padding-top: 12px;
+            font-size: 0.75rem;
+        }
+
+        .footer-bottom-compact a {
+            color: #d4ecff;
+            text-decoration: none;
+            border-bottom: 1px dotted #5f8db0;
+        }

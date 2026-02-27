@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RID Research Library | Signup</title>
+    <!-- Font Awesome 6 & Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link    rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/css/Research-paper/create.css">
+  </head>
+  <body>
+    <div class="signup-card">
+      <div class="card-header">
+        <div class="library-badge">
+          <div class="rid-logo">
+            <i class="fas fa-landmark"></i>
+          </div>
+          <div class="rid-text"><span>RID</span> Research Library</div>
+        </div>
+        <div class="header-sub">
+          <h2>Create researcher account</h2>
+          <span class="badge"
+            ><i class="fas-regular fa-book-open"></i> 10,000+ resources</span
+          >
+        </div>
+      </div>
+
+      <form action="signup.php" method="post">
+        <!-- Full name -->
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input
+            type="text"
+            id="fullname"
+            name="fullname"
+            placeholder="Full name"
+            required
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email address"
+            required
+          />
+        </div>
+
+        <!-- Institution -->
+        <div class="input-group">
+          <i class="fas fa-building-columns"></i>
+          <input
+            type="text"
+            id="institution"
+            name="institution"
+            placeholder="Institution / University"
+            required
+          />
+        </div>
+
+        <!-- Password & Confirm Password side by side -->
+        <div class="password-row">
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              placeholder="Confirm password"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Password strength indicator (professional) -->
+        <div class="password-strength">
+          <div class="strength-bars">
+            <div class="bar fill"></div>
+            <div class="bar fill"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <span class="strength-label">Strong password</span>
+        </div>
+
+        <!-- Terms & conditions -->
+        <div class="terms-wrapper">
+          <input type="checkbox" id="terms" required />
+          <label for="terms"
+            >I agree to the <a href="#">Terms of access</a> and
+            <a href="#">Library privacy policy</a></label
+          >
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn-primary">
+          <span>Sign up to RID Library</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <!-- Login link -->
+      <div class="login-link">
+        <span>Already a member?</span>
+        <a href="/research-login"><i class="fas fa-sign-in-alt"></i>Login</a>
+      </div>
+
+      <!-- Library footer with meta info -->
+      <div class="library-footer">
+        <span
+          ><i class="fas-regular fa-circle-check"></i> Verified
+          institution</span
+        >
+        <span><i class="fas-regular fa-shield"></i> Secure access</span>
+        <span><i class="fas-regular fa-clock"></i> 24/7 remote access</span>
+      </div>
+    </div>
+  </body>
+</html>

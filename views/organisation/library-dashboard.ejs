@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>creativ·panel · header search · delete card</title>
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="\css\library_deshboard\deshboard.css">
+</head>
+<body>
+
+<!-- ========== FIXED TOP BAR WITH SEARCH ========== -->
+<header class="main-header">
+    <div class="logo-area">
+        <i class="fas fa-feather"></i> 
+        <span id="userNameDisplay">Library Dashboard</span>
+    </div>
+
+    <div class="header-search">
+        <i class="fas fa-search"></i>
+        <input type="text" id="siteSearchInput" placeholder="Search site # (101, 102...)" autocomplete="off">
+        <button class="clear-header-search" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+    </div>
+
+    <button class="menu-toggle" id="menuToggleBtn"><i class="fas fa-bars"></i></button>
+</header>
+
+<!-- ========== FIXED SIDEBAR ========== -->
+<aside class="custom-sidebar" id="customSidebar">
+    <div class="sidebar-header-custom">
+        <i class="fas fa-compass"></i>
+        <h2>Library</h2>
+    </div>
+    <ul class="sidebar-menu" id="sidebarMenu">
+        
+        <li><a href="#" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#" data-section="registerCandidate"><i class="fas fa-user-plus"></i> Reg. Student </a></li>
+        <li><a href="#" data-section="studentList"><i class="fas fa-users"></i> Student List</a></li>
+        <li><a href="#" data-section="seatView"><i class="fas fa-chair"></i> Views seat</a></li>        
+        <li><a href="#" data-section="teachingTools"><i class="fas fa-chalkboard-teacher"></i> Library tools</a></li>
+        <li><a href="#" data-section="createTests"><i class="fas fa-file-alt"></i> Create tests</a></li>
+        <li><a href="#" data-section="registerForm"><i class="fas fa-file-signature"></i> Register form</a></li>
+        <li><a href="#" data-section="calculator"><i class="fas fa-calculator"></i> Calculator</a></li>
+        <li><a href="#" data-section="news"><i class="fas fa-newspaper"></i> News</a></li>
+        <li><a href="#" data-section="birthday"><i class="fas fa-cake-candles"></i> Birthday</a></li>
+        <li><a href="#" data-section="ebook"><i class="fas fa-book"></i> E-book</a></li>
+        <li><a href="#" data-section="createCv"><i class="fas fa-file-pdf"></i> Create cv</a></li>
+        <li><a href="#" data-section="createPpt"><i class="fas fa-file-powerpoint"></i> Create ppt</a></li>
+        <li><a href="#" data-section="socialMedia"><i class="fas fa-share-alt"></i> Social media</a></li>
+        <li><a href="#" data-section="chat"><i class="fas fa-comments"></i> Chat</a></li>
+        <li><a href="#" data-section="support"><i class="fas fa-headset"></i> Support</a></li>
+    </ul>
+</aside>
+
+<!-- ========== HORIZONTAL NAVBAR ========== -->
+<div class="desktop-nav">
+    <ul class="desktop-menu">
+        <li><a href="#" data-section="dashboard" class="desktop-menu-link"><i class="fas fa-star"></i> Home </a></li>
+        <li><a href="#" data-section="support" class="desktop-menu-link"><i class="fas fa-headset"></i> Support</a></li>
+        <li><a href="#" data-section="seatView" class="desktop-menu-link"><i class="fas fa-chair"></i> Views seat</a></li>
+        <li><a href="#" data-section="teachingTools" class="desktop-menu-link"><i class="fas fa-chalkboard-teacher"></i> Library tools</a></li>
+        <li><a href="#" data-section="createPpt" class="desktop-menu-link"><i class="fas fa-file-powerpoint"></i> Create ppt</a></li>
+        <li><a href="#" data-section="createCv" class="desktop-menu-link"><i class="fas fa-file-alt"></i>Create cv</a></li>
+        <li><a href="#" data-section="internship" class="desktop-menu-link"><i class="fas fa-briefcase"></i> Internship</a></li>
+        <li><a href="#" data-section="govtJob" class="desktop-menu-link"><i class="fas fa-landmark"></i> Govt Job</a></li>
+        <li><a href="#" data-section="tech" class="desktop-menu-link"><i class="fas fa-laptop-code"></i> Tech</a></li>
+        <li><a href="#" data-section="chat" class="desktop-menu-link"><i class="fas fa-comments"></i> Chat</a></li>
+        
+        <li><a href="#" data-section="ebook" class="desktop-menu-link"><i class="fas fa-book"></i> E-Book</a></li>
+        <button class="action-btn create-candidate-btn"><i class="fas fa-plus-circle"></i>Add Candidate</button>
+    </ul>
+</div>
+
+<!-- ========== MAIN CONTENT ========== -->
+<div class="main-content">
+    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+        <i class="fas fa-bars"></i> <span>Open Sidebar</span>
+    </button>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="content-section active">
+        <button class="section-close" onclick="closeSection('dashboardSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-tachometer-alt"></i> Dashboard</h3>
+        
+        <div class="action-buttons">
+            <button class="action-btn" id="filterIntimeBtn"><i class="fas fa-circle" style="color:#2dd4bf;"></i> Present</button>
+            <button class="action-btn" id="filterOuttimeBtn"><i class="fas fa-circle" style="color:#f87171;"></i> Absent</button>
+            <button class="action-btn register-action create-candidate-btn"><i class="fas fa-user-plus"></i> Add Candidate</button>
+        </div>
+
+        <div id="cardsGridContainer" class="cards-grid"></div>
+
+        <div class="current-stats">
+            <h4><i class="fas fa-map-pin"></i> CURRENT STATS</h4>
+            <div class="stats-grid" id="mainStatsGrid"></div>
+            <div class="stats-footer" id="mainStatsFooter"></div>
+        </div>
+    </div>
+
+    <!-- Student List Section -->
+    <div id="studentListSection" class="content-section">
+        <button class="section-close" onclick="closeSection('studentListSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-users"></i> Student List</h3>
+        <div id="studentListTableContainer"></div>
+    </div>
+
+    <!-- Seat View Section -->
+    <div id="seatViewSection" class="content-section">
+        <button class="section-close" onclick="closeSection('seatViewSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-chair"></i> Seat View</h3>
+        <div class="seat-grid" id="seatGridContainer"></div>
+    </div>
+
+    <!-- Register Candidate Section -->
+    <div id="registerCandidateSection" class="content-section">
+        <button class="section-close" onclick="closeSection('registerCandidateSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-user-plus"></i> Add Candidate</h3>
+        <div class="register-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Name</label>
+                    <input type="text" id="sectionCandName" placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Date</label>
+                    <input type="date" id="sectionCandDate">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Shift</label>
+                    <select id="sectionCandShift">
+                        <option>Morning</option>
+                        <option>Evening</option>
+                        <option>Night</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Site type</label>
+                    <select id="sectionSiteType">
+                        <option value="normal">Normal</option>
+                        <option value="reservb">Reserved</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-coins"></i> Fee</label>
+                    <input type="text" id="sectionCandFee" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-mobile"></i> Mobile</label>
+                    <input type="text" id="sectionCandMobile" placeholder="Phone number">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-hashtag"></i> Site #</label>
+                    <input type="text" id="sectionCandSite" placeholder="Auto / manual">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-credit-card"></i> Payment</label>
+                    <select id="sectionPaymentStatus">
+                        <option value="paid">Paid</option>
+                        <option value="unpaid">Unpaid</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <button class="submit-btn" id="sectionCreateBtn"><i class="fas fa-check-circle"></i> Create Seat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teaching Tools Section -->
+    <div id="teachingToolsSection" class="content-section">
+        <button class="section-close" onclick="closeSection('teachingToolsSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-chalkboard-teacher"></i> Teaching Tools</h3>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <i class="fas fa-chalkboard"></i>
+                <h4>Whiteboard</h4>
+                <p>Interactive whiteboard for teaching</p>
+            </div>
+            <div class="tool-card">
+                <i class="fas fa-video"></i>
+                <h4>Video Lectures</h4>
+                <p>Record and share video lectures</p>
+            </div>
+            <div class="tool-card">
+                <i class="fas fa-file-powerpoint"></i>
+                <h4>Presentations</h4>
+                <p>Create and manage presentations</p>
+            </div>
+            <div class="tool-card">
+                <i class="fas fa-code"></i>
+                <h4>Code Editor</h4>
+                <p>Write and run code in browser</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Tests Section -->
+    <div id="createTestsSection" class="content-section">
+        <button class="section-close" onclick="closeSection('createTestsSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-file-alt"></i> Create Tests</h3>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label>Test Title</label>
+                <input type="text" placeholder="Enter test title">
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <select>
+                    <option>Mathematics</option>
+                    <option>Science</option>
+                    <option>English</option>
+                    <option>Computer Science</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <input type="number" placeholder="60">
+            </div>
+            <div class="form-group full-width">
+                <label>Questions</label>
+                <textarea rows="5" placeholder="Enter questions (one per line)"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <button class="submit-btn">Create Test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Form Section -->
+    <div id="registerFormSection" class="content-section">
+        <button class="section-close" onclick="closeSection('registerFormSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-file-signature"></i> Register Form</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" placeholder="Enter phone">
+            </div>
+            <div class="form-group">
+                <label>Course</label>
+                <select>
+                    <option>Web Development</option>
+                    <option>Data Science</option>
+                    <option>Mobile App Development</option>
+                    <option>Cloud Computing</option>
+                </select>
+            </div>
+            <div class="form-group full-width">
+                <label>Address</label>
+                <textarea rows="3" placeholder="Enter address"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <button class="submit-btn">Register</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create PPT Section -->
+    <div id="createPptSection" class="content-section">
+        <button class="section-close" onclick="closeSection('createPptSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-file-powerpoint"></i> Create PPT</h3>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label>Presentation Title</label>
+                <input type="text" placeholder="Enter presentation title">
+            </div>
+            <div class="form-group">
+                <label>Number of Slides</label>
+                <input type="number" placeholder="10">
+            </div>
+            <div class="form-group">
+                <label>Template</label>
+                <select>
+                    <option>Professional</option>
+                    <option>Creative</option>
+                    <option>Minimal</option>
+                    <option>Educational</option>
+                </select>
+            </div>
+            <div class="form-group full-width">
+                <label>Content</label>
+                <textarea rows="8" placeholder="Enter slide content (separate slides with ---)"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <button class="submit-btn">Generate PPT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create CV Section -->
+    <div id="createCvSection" class="content-section">
+        <button class="section-close" onclick="closeSection('createCvSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-file-pdf"></i> Create CV</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label>Profession</label>
+                <input type="text" placeholder="e.g., Web Developer">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="Your email">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" placeholder="Your phone">
+            </div>
+            <div class="form-group full-width">
+                <label>Summary</label>
+                <textarea rows="3" placeholder="Brief professional summary"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <label>Experience</label>
+                <textarea rows="5" placeholder="List your work experience"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <label>Education</label>
+                <textarea rows="3" placeholder="Your educational background"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <label>Skills</label>
+                <textarea rows="3" placeholder="Your skills (comma separated)"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <button class="submit-btn">Generate CV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculator Section -->
+    <div id="calculatorSection" class="content-section">
+        <button class="section-close" onclick="closeSection('calculatorSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-calculator"></i> Calculator</h3>
+        <div class="calculator">
+            <div class="calc-display" id="calcDisplay">0</div>
+            <div class="calc-buttons">
+                <button class="calc-btn" onclick="calcInput('7')">7</button>
+                <button class="calc-btn" onclick="calcInput('8')">8</button>
+                <button class="calc-btn" onclick="calcInput('9')">9</button>
+                <button class="calc-btn operator" onclick="calcOperator('/')">÷</button>
+                <button class="calc-btn" onclick="calcInput('4')">4</button>
+                <button class="calc-btn" onclick="calcInput('5')">5</button>
+                <button class="calc-btn" onclick="calcInput('6')">6</button>
+                <button class="calc-btn operator" onclick="calcOperator('*')">×</button>
+                <button class="calc-btn" onclick="calcInput('1')">1</button>
+                <button class="calc-btn" onclick="calcInput('2')">2</button>
+                <button class="calc-btn" onclick="calcInput('3')">3</button>
+                <button class="calc-btn operator" onclick="calcOperator('-')">−</button>
+                <button class="calc-btn" onclick="calcInput('0')">0</button>
+                <button class="calc-btn" onclick="calcInput('.')">.</button>
+                <button class="calc-btn operator" onclick="calcCalculate()">=</button>
+                <button class="calc-btn operator" onclick="calcOperator('+')">+</button>
+                <button class="calc-btn operator" onclick="calcClear()" style="grid-column: span 4;">C</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- E-book Section -->
+    <div id="ebookSection" class="content-section">
+        <button class="section-close" onclick="closeSection('ebookSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-book"></i> E-book Library</h3>
+        <div class="ebook-grid">
+            <div class="ebook-card">
+                <i class="fas fa-book-open"></i>
+                <h4>Web Development</h4>
+                <p>by John Doe</p>
+            </div>
+            <div class="ebook-card">
+                <i class="fas fa-book-open"></i>
+                <h4>Data Science</h4>
+                <p>by Jane Smith</p>
+            </div>
+            <div class="ebook-card">
+                <i class="fas fa-book-open"></i>
+                <h4>JavaScript</h4>
+                <p>by Bob Johnson</p>
+            </div>
+            <div class="ebook-card">
+                <i class="fas fa-book-open"></i>
+                <h4>Python</h4>
+                <p>by Alice Brown</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Section -->
+    <div id="newsSection" class="content-section">
+        <button class="section-close" onclick="closeSection('newsSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-newspaper"></i> Latest News</h3>
+        <div class="news-item">
+            <div class="news-icon"><i class="fas fa-laptop-code"></i></div>
+            <div class="news-content">
+                <h4>New Course Launch</h4>
+                <p>Advanced Web Development course now available</p>
+                <small>2 hours ago</small>
+            </div>
+        </div>
+        <div class="news-item">
+            <div class="news-icon"><i class="fas fa-trophy"></i></div>
+            <div class="news-content">
+                <h4>Student Achievement</h4>
+                <p>5 students won hackathon competition</p>
+                <small>Yesterday</small>
+            </div>
+        </div>
+        <div class="news-item">
+            <div class="news-icon"><i class="fas fa-calendar"></i></div>
+            <div class="news-content">
+                <h4>Upcoming Event</h4>
+                <p>Tech conference on March 15th</p>
+                <small>3 days ago</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Media Section -->
+    <div id="socialMediaSection" class="content-section">
+        <button class="section-close" onclick="closeSection('socialMediaSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-share-alt"></i> Social Media</h3>
+        <div class="social-grid">
+            <div class="social-card facebook">
+                <i class="fab fa-facebook"></i>
+                <h4>Facebook</h4>
+                <p>Connect with us</p>
+            </div>
+            <div class="social-card twitter">
+                <i class="fab fa-twitter"></i>
+                <h4>Twitter</h4>
+                <p>Follow for updates</p>
+            </div>
+            <div class="social-card instagram">
+                <i class="fab fa-instagram"></i>
+                <h4>Instagram</h4>
+                <p>See our photos</p>
+            </div>
+            <div class="social-card linkedin">
+                <i class="fab fa-linkedin"></i>
+                <h4>LinkedIn</h4>
+                <p>Professional network</p>
+            </div>
+            <div class="social-card youtube">
+                <i class="fab fa-youtube"></i>
+                <h4>YouTube</h4>
+                <p>Watch our videos</p>
+            </div>
+            <div class="social-card whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <h4>WhatsApp</h4>
+                <p>Chat with us</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Birthday Section -->
+    <div id="birthdaySection" class="content-section">
+        <button class="section-close" onclick="closeSection('birthdaySection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-cake-candles"></i> Birthdays</h3>
+        <div class="birthday-item">
+            <div class="birthday-avatar"><i class="fas fa-user"></i></div>
+            <div class="birthday-info">
+                <h4>John Doe</h4>
+                <p>Student - Web Development</p>
+                <span class="date">March 15</span>
+            </div>
+        </div>
+        <div class="birthday-item">
+            <div class="birthday-avatar"><i class="fas fa-user"></i></div>
+            <div class="birthday-info">
+                <h4>Jane Smith</h4>
+                <p>Teacher - Data Science</p>
+                <span class="date">March 18</span>
+            </div>
+        </div>
+        <div class="birthday-item">
+            <div class="birthday-avatar"><i class="fas fa-user"></i></div>
+            <div class="birthday-info">
+                <h4>Bob Johnson</h4>
+                <p>Student - Python</p>
+                <span class="date">March 22</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Section -->
+    <div id="chatSection" class="content-section">
+        <button class="section-close" onclick="closeSection('chatSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-comments"></i> Chat</h3>
+        <div class="chat-container">
+            <div class="chat-sidebar">
+                <div class="chat-user active">
+                    <div class="chat-user-avatar"><i class="fas fa-user"></i></div>
+                    <div class="chat-user-info">
+                        <div>John Doe</div>
+                        <small>Online</small>
+                    </div>
+                </div>
+                <div class="chat-user">
+                    <div class="chat-user-avatar"><i class="fas fa-user"></i></div>
+                    <div class="chat-user-info">
+                        <div>Jane Smith</div>
+                        <small>Last seen 5m ago</small>
+                    </div>
+                </div>
+                <div class="chat-user">
+                    <div class="chat-user-avatar"><i class="fas fa-user"></i></div>
+                    <div class="chat-user-info">
+                        <div>Bob Johnson</div>
+                        <small>Online</small>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-main">
+                <div class="chat-messages">
+                    <div class="chat-message received">
+                        <div class="message-bubble">Hello! How can I help you?</div>
+                        <div class="message-time">10:30 AM</div>
+                    </div>
+                    <div class="chat-message sent">
+                        <div class="message-bubble">I have a question about the course</div>
+                        <div class="message-time">10:32 AM</div>
+                    </div>
+                    <div class="chat-message received">
+                        <div class="message-bubble">Sure, what would you like to know?</div>
+                        <div class="message-time">10:33 AM</div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Type a message...">
+                    <button><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Section -->
+    <div id="supportSection" class="content-section">
+        <button class="section-close" onclick="closeSection('supportSection')"><i class="fas fa-times"></i> Close</button>
+        <h3><i class="fas fa-headset"></i> Support Center</h3>
+        <div class="support-container">
+            <div class="support-card">
+                <i class="fas fa-phone"></i>
+                <h4>Phone Support</h4>
+                <p>Call us for immediate assistance</p>
+                <button class="support-btn">Call Now</button>
+            </div>
+            <div class="support-card">
+                <i class="fas fa-envelope"></i>
+                <h4>Email Support</h4>
+                <p>Send us an email</p>
+                <button class="support-btn">Email Us</button>
+            </div>
+            <div class="support-card">
+                <i class="fas fa-comment"></i>
+                <h4>Live Chat</h4>
+                <p>Chat with our support team</p>
+                <button class="support-btn">Start Chat</button>
+            </div>
+            <div class="support-card">
+                <i class="fas fa-question-circle"></i>
+                <h4>FAQ</h4>
+                <p>Find answers to common questions</p>
+                <button class="support-btn">View FAQ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== MODALS ========== -->
+<div id="createFormModal" class="modal-overlay">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between;">
+            <h2 style="color:#104e63;">
+                <i class="fas fa-pen"></i> Add Candidate
+            </h2>
+            <button id="closeFormModalBtn"
+                style="background:none; border:none; font-size:2.5rem; cursor:pointer;">
+                &times;
+            </button>
+        </div>
+
+        <form id="createCandidateForm" class="popup-form-grid">
+            <div class="popup-form-item">
+                <label><i class="fas fa-user"></i> Name</label>
+                <input type="text" id="popupCandName" name="name" placeholder="name">
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-calendar"></i> Date</label>
+                <input type="date" id="popupCandDate" name="date">
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-clock"></i> Shift</label>
+                <select id="popupCandShift" name="shift">
+                    <option>Morning</option>
+                    <option>Evening</option>
+                    <option>Night</option>
+                </select>
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-tag"></i> Site type</label>
+                <select id="popupSiteType" name="siteType">
+                    <option value="normal">Normal</option>
+                    <option value="reservb">Reserved</option>
+                </select>
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-coins"></i> Fee</label>
+                <input type="text" id="popupCandFee" name="fee">
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-mobile"></i> Mobile</label>
+                <input type="text" id="popupCandMobile" name="mobile">
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-hashtag"></i> Site #</label>
+                <input type="text" id="popupCandSite" name="siteNumber" placeholder="auto / manual">
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-sign-in-alt"></i> In time</label>
+                <input type="text" id="popupCandIn" name="inTime" value="09:00 AM">
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-sign-out-alt"></i> Out time</label>
+                <input type="text" id="popupCandOut" name="outTime" value="05:00 PM">
+            </div>
+            <div class="popup-form-item">
+                <label><i class="fas fa-credit-card"></i> Payment</label>
+                <select id="popupPaymentStatus" name="payment">
+                    <option value="paid">paid</option>
+                    <option value="unpaid">unpaid</option>
+                </select>
+            </div>
+            <button type="button" class="popup-create-btn" id="popupCreateBtn">
+                <i class="fas fa-check-circle"></i> Create Seat
+            </button>
+        </form>
+    </div>
+</div>
+
+<div id="detailModal" class="modal-overlay">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between;">
+            <h2 style="color:#104e63;"><i class="fas fa-id-card"></i> Details</h2>
+            <button id="closeModalBtn" style="background:none; border:none; font-size:2.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div id="modalDetailsContainer" style="margin: 1.5rem 0;"></div>
+        <button id="detailTogglePaymentBtn" class="action-btn" style="background:white; width:100%; justify-content:center;"><i class="fas fa-exchange-alt"></i> Update payment</button>
+        <button id="deleteCardBtn" class="delete-card-btn"><i class="fas fa-trash-alt"></i> Delete </button>
+    </div>
+</div>
+<script src="\js\librarydashboard.js"></script>
+
+</body>
+</html>

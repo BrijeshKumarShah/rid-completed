@@ -12,6 +12,7 @@
   box-sizing:border-box;
   font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
 }
+
 body{
   background:#495057;
   display:flex;
@@ -20,44 +21,68 @@ body{
   min-height:100vh;
   padding:15px;
 }
+
 .register-container{
   width:100%;
-  max-width:500px;
+  max-width:650px;
   background:#fff;
   border-radius:16px;
-  padding:30px 25px;
+  padding:35px 30px;
   box-shadow:0 20px 40px rgba(0,0,0,.15);
 }
+
 .header{
   text-align:center;
   margin-bottom:25px;
   border-bottom:1px solid #eee;
   padding-bottom:20px;
 }
+
 .header h1{
   font-size:28px;
   color:#2c3e50;
 }
+
 .header h3{
   font-size:16px;
   color:#7f8c8d;
 }
-.form-group{
+
+.form-row{
+  display:flex;
+  gap:15px;
   margin-bottom:18px;
 }
+
+.form-group{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
 .form-group label{
-  display:block;
   margin-bottom:6px;
   font-weight:600;
 }
+
 .form-group input,
 .form-group select{
-  width:100%;
   padding:14px;
   border-radius:10px;
   border:2px solid #e1e8ed;
   background:#f8f9fa;
+  font-size:15px;
+  transition:.3s;
 }
+
+.form-group input:focus,
+.form-group select:focus{
+  outline:none;
+  border-color:#4a6cf7;
+  background:#fff;
+}
+
+/* Organisation Box */
 .org-selection{
   display:none;
   margin-bottom:18px;
@@ -66,11 +91,13 @@ body{
   border-radius:12px;
   border:2px solid #dee2e6;
 }
+
 .org-buttons{
   display:flex;
   gap:12px;
   flex-wrap:wrap;
 }
+
 .org-btn{
   flex:1;
   min-width:120px;
@@ -81,18 +108,22 @@ body{
   cursor:pointer;
   text-align:center;
   font-weight:600;
+  transition:.3s;
 }
+
 .org-btn.selected{
   background:#4a6cf7;
   color:#fff;
   border-color:#4a6cf7;
 }
+
 .org-validation{
   display:none;
   margin-top:10px;
   color:#e74c3c;
   text-align:center;
 }
+
 .submit-btn{
   width:100%;
   padding:16px;
@@ -102,17 +133,25 @@ body{
   font-size:18px;
   border-radius:12px;
   cursor:pointer;
+  transition:.3s;
 }
+
+.submit-btn:hover:not(:disabled){
+  background:#3954d4;
+}
+
 .submit-btn:disabled{
   background:#95a5a6;
   cursor:not-allowed;
 }
+
 .login-link{
   text-align:center;
   margin-top:22px;
   border-top:1px solid #eee;
   padding-top:18px;
 }
+
 .login-btn{
   background:#4a6cf7;
   color:#fff;
@@ -120,6 +159,49 @@ body{
   border:none;
   border-radius:6px;
   cursor:pointer;
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .form-row{
+    flex-direction:column;
+  }
+}
+.login-link{
+  text-align:center;
+  margin-top:25px;
+  padding-top:18px;
+  border-top:1px solid #eee;
+  font-size:15px;
+  color:#555;
+}
+
+.login-text{
+  color:#4a6cf7;
+  font-weight:600;
+  cursor:pointer;
+  margin-left:6px;
+  position:relative;
+  transition:.3s;
+}
+
+.login-text::after{
+  content:"";
+  position:absolute;
+  width:0%;
+  height:2px;
+  left:0;
+  bottom:-3px;
+  background:#4a6cf7;
+  transition:.3s;
+}
+
+.login-text:hover{
+  color:#2f4de0;
+}
+
+.login-text:hover::after{
+  width:100%;
 }
 </style>
 </head>
@@ -134,47 +216,52 @@ body{
 
   <form id="registerForm">
 
-    <div class="form-group">
-      <label>Full Name</label>
-      <input type="text" id="fullName" name="name" required>
+    <!-- Name + Email -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="fullName" name="name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" name="email" autocomplete="new-password" required>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="email" name="email" autocomplete="new-password" required>
+    <!-- Mobile + Register As -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Mobile</label>
+        <input type="tel" id="mobile" name="phone" maxlength="10" required>
+      </div>
 
-    </div>
-
-    <div class="form-group">
-      <label>Mobile</label>
-      <input type="tel" id="mobile" name="phone" maxlength="10" required>
-    </div>
-
-    <div class="form-group">
-      <label>Register As</label>
-      <select id="role" name="role" required>
-        <option value="student">Student</option>
-        <option value="teacher">Teacher</option>
-        <option value="organisation">Organisation</option>
-      </select>
+      <div class="form-group">
+        <label>Register As</label>
+        <select id="role" name="role" required>
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+          <option value="organisation">Organisation</option>
+        </select>
+      </div>
     </div>
 
     <!-- Organisation Options -->
     <div id="orgSelection" class="org-selection">
       <p><b>Select Organization Type:</b></p>
       <div class="org-buttons">
-        <div class="org-btn" onclick="selectOrg(this)">Library</div>
-        <div class="org-btn" onclick="selectOrg(this)">DCA</div>
-        <div class="org-btn" onclick="selectOrg(this)">Coaching Centre</div>
+        <div class="org-btn" data-type="Library" onclick="selectOrg(this)">Library</div>
+        <div class="org-btn" data-type="DCA" onclick="selectOrg(this)">DCA</div>
+        <div class="org-btn" data-type="Coaching Centre" onclick="selectOrg(this)">Coaching Centre</div>
       </div>
       <div id="orgValidation" class="org-validation">
         Please select organization type
       </div>
     </div>
 
-    <!-- hidden field -->
     <input type="hidden" id="organisationType" name="organisationType">
 
+    <!-- Password -->
     <div class="form-group">
       <label>Password</label>
       <input type="password" id="password" name="password" required>
@@ -184,12 +271,10 @@ body{
       Submit
     </button>
 
-    <div class="login-link">
-      <b>Already have an account?</b><br><br>
-      <button type="button" class="login-btn" onclick="goToLogin()">
-        Login
-      </button>
-    </div>
+   <div class="login-link">
+  Already have an account? 
+  <span class="login-text" onclick="goToLogin()">Login</span>
+</div>
 
   </form>
 </div>
@@ -209,7 +294,6 @@ const email = document.getElementById("email");
 const mobile = document.getElementById("mobile");
 const password = document.getElementById("password");
 
-/* ROLE CHANGE */
 role.addEventListener("change", () => {
   if (role.value === "organisation") {
     orgBox.style.display = "block";
@@ -222,31 +306,23 @@ role.addEventListener("change", () => {
   validateForm();
 });
 
-/* ORG TYPE SELECT */
 function selectOrg(el) {
   document.querySelectorAll(".org-btn").forEach(b => b.classList.remove("selected"));
   el.classList.add("selected");
-  selectedOrgType = el.innerText;
+  selectedOrgType = el.dataset.type;
   isOrgSelected = true;
   orgValidation.style.display = "none";
   validateForm();
 }
 
-/* VALIDATION */
 function validateForm() {
   const nameValid = fullName.value.trim().length > 0;
-
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    email.value.trim()
-  );
-
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
   const mobileValid = /^\d{10}$/.test(mobile.value);
-
   const passwordValid = password.value.length >= 6;
 
   const filled = nameValid && emailValid && mobileValid && passwordValid;
 
-  // Organisation type check
   if (role.value === "organisation" && !isOrgSelected) {
     submitBtn.disabled = true;
     return;
@@ -255,52 +331,49 @@ function validateForm() {
   submitBtn.disabled = !filled;
 }
 
-
-/* SUBMIT */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Organisation validation
   if (role.value === "organisation" && !isOrgSelected) {
     orgValidation.style.display = "block";
     return;
   }
 
-  // Hidden field set
-  document.getElementById("organisationType").value = selectedOrgType;
-
-  const formData = new FormData(form);
+  const data = {
+    name: fullName.value,
+    email: email.value,
+    phone: mobile.value,
+    password: password.value,
+    role: role.value,
+    organisationType: role.value === "organisation" ? selectedOrgType : ""
+  };
 
   try {
     const res = await fetch("/user/register", {
       method: "POST",
-      body: formData
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
     });
 
     const result = await res.json();
     alert(result.message);
 
-    // Success redirect
     if (result.success) {
-      window.location.href = "/Login/login.html";
+      window.location.href = "/login";
     }
 
   } catch (err) {
     alert("Server error");
-    console.error(err);
   }
 });
 
-/* INPUT LISTENER */
 document.querySelectorAll("input").forEach(i =>
   i.addEventListener("input", validateForm)
 );
 
 function goToLogin(){
-  window.location.href = "/Login/login.html";
-
+  window.location.href = "/login";
 }
-
 </script>
 
 </body>

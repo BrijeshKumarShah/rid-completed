@@ -1,0 +1,785 @@
+*<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Research Paper</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="css/Research-paper copy/home.css"/>
+  </head>
+  <body>
+    <header id="maintenanceHeader" class="maintenance-header">
+      Loading RID maintenance info...
+    </header>
+    <!-- top navbar (dark) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+      <div class="container-fluid">
+        <div class="d-flex align-items-center">
+          <a class="navbar-brand fw-bold text-nowrap me-3" href="#"
+            ><i class="bi bi-journal-richtext text-info me-1"></i> RidTech.in</a
+          >
+          <div class="d-none d-lg-flex gap-3">
+            <a class="nav-link text-white-50 small" href="#">Featured Papers</a>
+            <a class="nav-link text-white-50 small" href="#">Journals</a>
+            <a class="nav-link text-white-50 small" href="#">Conferences</a>
+            <a class="nav-link text-white-50 small" href="#">Submit Paper</a>
+            <a class="nav-link text-white-50 small" href="#">About</a>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <!-- <span class="text-white-50 small d-none d-md-inline"> Subscribe</span> -->
+          <button
+            class="btn btn-outline-light btn-sm rounded-pill px-3"
+            onclick="alert('Subscribe demo')"
+          >
+            Subscribe
+          </button>
+          <button
+            class="btn btn-outline-warning btn-sm rounded-pill px-3"
+            onclick="alert('Donate demo')"
+          >
+            Donate
+          </button>
+          <i
+            class="bi bi-cart3 text-white ms-2"
+            style="font-size: 1.2rem"
+            onclick="alert('Cart')"
+          ></i>
+          <a href="/research-create"
+            ><button
+              class="btn btn-outline-primary btn-sm rounded-pill px-3 d-none d-lg-inline"
+            >
+              Create Account
+            </button></a
+          >
+          <a href="/research-login"
+            ><button class="btn btn-success btn-sm rounded-pill px-3">
+              Sign In
+            </button></a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- second navbar (light) -->
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-light shadow-sm py-2 border-bottom"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#"
+          ><i class="bi bi-journal-bookmark-fill text-primary me-2"></i>RID
+          ResearchHub</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#researchNavbar"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="researchNavbar">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle fw-semibold"
+                href="javascript:void(0)"
+                id="browseDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                >Browse</a
+              >
+
+              <ul class="dropdown-menu shadow" aria-labelledby="browseDropdown">
+                <li><a class="dropdown-item" href="#">Books</a></li>
+                <li><a class="dropdown-item" href="#">Conferences</a></li>
+                <li><a class="dropdown-item" href="#">Courses</a></li>
+                <li>
+                  <a class="dropdown-item" href="#">Journals & Magazines</a>
+                </li>
+                <li><a class="dropdown-item" href="#">Standards</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="#">Recently Published</a>
+                </li>
+                <li><a class="dropdown-item" href="#">Popular</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle fw-semibold"
+                href="javascript:void(0)"
+                id="mySettingsDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                My Settings
+              </a>
+
+              <ul
+                class="dropdown-menu shadow"
+                aria-labelledby="mySettingsDropdown"
+                style="min-width: 260px"
+              >
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-bell me-2"></i> Alerts</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-folder2-open me-2"></i> My Research
+                    Projects</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-heart me-2"></i> My Favorites</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-sliders me-2"></i> Preferences</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-receipt me-2"></i> Purchase History</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-clock-history me-2"></i> Search History</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-shield-lock me-2"></i> What can I
+                    access?</a
+                  >
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item"><a class="nav-link" href="#">Help</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Books</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Conferences</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="#">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Journals</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Research</a></li>
+          </ul>
+
+          <div class="d-flex auth-buttons gap-2">
+            <!-- <button
+              class="btn btn-outline-primary rounded-pill"
+              id="registerBtn"
+              onclick="alert('🔐 Register demo')"
+            >
+              <i class="bi bi-person-plus"></i> Register
+            </button> -->
+            <!-- <button
+              class="btn btn-outline-success rounded-pill"
+              id="loginBtn"
+              onclick="handleLogin()"
+            >
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </button> -->
+            <button
+              class="btn btn-primary rounded-pill"
+              id="uploadBtn"
+              onclick="handleUpload()"
+            >
+              <i class="bi bi-cloud-upload"></i> Upload paper
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ========== CAROUSEL SECTION – 360° ROTATING IMAGE ========== -->
+    <div class="carousel-360-wrapper">
+      <div
+        id="carousel360"
+        class="carousel slide"
+        data-bs-ride="carousel"
+        data-bs-interval="4000"
+      >
+        <div class="carousel-indicators">
+          <button
+            type="button"
+            data-bs-target="#carousel360"
+            data-bs-slide-to="0"
+            class="active"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#carousel360"
+            data-bs-slide-to="1"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#carousel360"
+            data-bs-slide-to="2"
+          ></button>
+        </div>
+        <div class="carousel-inner">
+          <!-- each slide contains the same image (kitten) but for clarity we keep three identical but any image works; we put rotate-360 on img -->
+          <div class="carousel-item active">
+            <img
+              src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40"
+              class="d-block w-100 rotate-360"
+              alt="360 rotating research"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="https://images.unsplash.com/photo-1532094349884-543bc11b234d"
+              class="d-block w-100 rotate-360"
+              alt="rotating laptop"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="https://static-cse.canva.com/blob/1630245/DronePhotography2.jpg"
+              class="d-block w-100 rotate-360"
+              alt="rotating drone"
+            />
+          </div>
+        </div>
+
+        <!-- search overlay (exactly like original, positioned above) -->
+        <div class="search-overlay-carousel">
+          <form
+            onsubmit="
+              event.preventDefault();
+              alert('🔎 Searching: ' + this.querySelector('input').value);
+            "
+          >
+            <input
+              type="search"
+              placeholder="🔍 SEARCH 7,121,914 ITEMS — journals, conferences, standards..."
+            />
+            <button type="submit">GO</button>
+          </form>
+        </div>
+
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carousel360"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carousel360"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- uploads section (scrollable) with id uploadList for dynamic papers -->
+    <!-- <section class="uploads-section">
+      <div class="container">
+        <h3 class="uploads-title">📌 Latest uploads</h3>
+        <div class="scrollable-uploads" id="uploadList"></div>
+      </div>
+    </section> -->
+
+    <!-- FEATURED AUTHORS etc. (preserved) -->
+    <section class="featured-authors-section">
+      <div class="container">
+        <h3 class="featured-title">Featured Authors</h3>
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <div class="author-card">
+              <div class="author-name">Deji Akinwande</div>
+              <div class="author-country">(USA)</div>
+              <div class="paper-box">
+                "Toward Clinically Accurate Continuous Blood Pressure ..."
+              </div>
+              <button
+                class="follow-btn"
+                onclick="alert('Following Deji Akinwande')"
+              >
+                [Follow]
+              </button>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="author-card">
+              <div class="author-name">Junchi Yan</div>
+              <div class="author-country">(CHINA)</div>
+              <div class="paper-box">
+                "DIY Your EasyNAS for Vision: Convolution Operation Merging ..."
+              </div>
+              <button
+                class="follow-btn"
+                onclick="alert('Following Junchi Yan')"
+              >
+                [Follow]
+              </button>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="author-card">
+              <div class="author-name">Melike Erol-Kantarci</div>
+              <div class="author-country">(CANADA)</div>
+              <div class="paper-box">
+                "Multi-Modal Data-Enhanced Foundation Models ..."
+              </div>
+              <button class="follow-btn" onclick="alert('Following Melike')">
+                [Follow]
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- featured articles -->
+    <section class="featured-articles-section">
+      <div class="container">
+        <h3 class="featured-title">Featured Articles</h3>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="article-card">
+              <img
+                src="https://etimg.etb2bimg.com/photo/122415332.cms"
+                class="article-image"
+                alt="article"
+              />
+              <div class="article-title">
+                Machine-Learning-Assisted Optimization for Antenna Geometry
+                Design
+              </div>
+              <div class="article-meta">IEEE Antennas</div>
+              <a href="#" class="read-more" onclick="alert('Read more')"
+                >Read More →</a
+              >
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="article-card">
+              <img
+                src="https://www.telecomreviewasia.com/wp-content/uploads/2026/02/Re-inventing-IT-Why-Re-invention-is-the-Imperative-for-Telecoms-CIOs.jpg"
+                class="article-image"
+                alt="article"
+              />
+              <div class="article-title">
+                Flexible Electromagnetic Fin: Accurate Electromechanical
+                Modeling
+              </div>
+              <div class="article-meta">IEEE Robotics</div>
+              <a href="#" class="read-more" onclick="alert('Read more')"
+                >Read More →</a
+              >
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="article-card">
+              <img
+                src="https://static.vecteezy.com/system/resources/thumbnails/033/881/502/small/drone-quadcopter-with-digital-camera-generative-ai-free-photo.jpg"
+                class="article-image"
+                alt="article"
+              />
+              <div class="article-title">
+                Next-Generation Deep Learning Integrated Drone Security
+              </div>
+              <div class="article-meta">IEEE Cloud</div>
+              <a href="#" class="read-more" onclick="alert('Read more')"
+                >Read More →</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- News & Conferences (minimal) -->
+    <section class="news-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="news-card">
+              <h3 class="featured-title">News</h3>
+              <ul class="news-list">
+                <li>
+                  <i class="bi bi-megaphone-fill"></i> IEEE Open Access Week
+                  2026
+                </li>
+                <li>
+                  <i class="bi bi-award-fill"></i> Ethical AI certification
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="news-card">
+              <h3 class="featured-title">Updates</h3>
+              <ul class="news-list">
+                <li><i class="bi bi-activity"></i> AgeTech Innovation</li>
+                <li>
+                  <i class="bi bi-check-circle-fill"></i> 180+ hybrid
+                  publications
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conferences -->
+    <section class="conferences-section">
+      <div class="container">
+        <h3 class="featured-title">Upcoming Conferences</h3>
+        <div class="conference-row">
+          <span class="conference-date">15 Feb</span
+          ><span class="flex-grow-1">2026 IEEE ISSCC</span>
+          <div class="conference-actions">
+            <button onclick="alert('Register')">REGISTER</button
+            ><button onclick="alert('About')">ABOUT</button>
+          </div>
+        </div>
+        <div class="conference-row">
+          <span class="conference-date">13 Apr</span
+          ><span class="flex-grow-1">2026 IEEE WCNC</span>
+          <div class="conference-actions">
+            <button onclick="alert('Register')">REGISTER</button
+            ><button onclick="alert('Call for Papers')">CALL FOR PAPERS</button>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <button
+            class="see-all-btn btn btn-outline-primary rounded-pill px-5 py-2"
+            onclick="alert('See all')"
+          >
+            SEE ALL UPCOMING
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer start – RID Bharat exact, fully responsive, no dots -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <!-- logo + address -->
+          <div class="footer-logo">
+            <img
+              src="assets/final_logo.svg"
+              alt="RID Bharat Logo"
+              onerror="
+                this.src =
+                  'https://via.placeholder.com/260x70/083d5d/FFFFFF?text=RID+Bharat+Logo'
+              "
+            />
+            <p>
+              Mig. 72, Rajiv Nagar, A Sector, Aayodhya bypass Bhopal, Madhya
+              Pradesh, India (462022)
+            </p>
+            <div class="contact-info">
+              <p>
+                <i class="fas fa-envelope"></i>
+                <a
+                  href="mailto:ridorg.in@gmail.com"
+                  style="color: #e0e0e0; text-decoration: none"
+                  >ridorg.in@gmail.com</a
+                >
+              </p>
+              <p>
+                <i class="fas fa-phone"></i>
+                <a
+                  href="tel:+919202707903"
+                  style="color: #e0e0e0; text-decoration: none"
+                  >+91- 9202707903</a
+                >
+              </p>
+            </div>
+          </div>
+          <!-- Research Topics (no dots) -->
+          <div class="footer-links">
+            <h3>Research Topics</h3>
+            <ul>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> Computers & Technology</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> AI & Machine Learning</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> Space Engineering</a
+                >
+              </li>
+              <li>
+                <a href="#"><i class="bi bi-chevron-right"></i> Data Science</a>
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> Renewable Energy</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Quick Links (no dots) -->
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li>
+                <a href=""><i class="bi bi-chevron-right"></i> About RID</a>
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> Research Papers</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> Innovation Hub</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> Join Community</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="bi bi-chevron-right"></i> Events & Workshops</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Follow Us + Rating -->
+          <div class="footer-social">
+            <h3>Follow Us</h3>
+            <ul>
+              <li>
+                <a href="#"><i class="fab fa-facebook-f"></i> Facebook</a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+              </li>
+              <li>
+                <a href="http://www.youtube.com/@RidBharat" target="_blank"
+                  ><i class="fab fa-youtube"></i> YouTube</a
+                >
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-github"></i> GitHub</a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+              </li>
+              <li>
+                <a href="mailto:ridorg.in@gmail.com"
+                  ><i class="fas fa-envelope"></i> Email</a
+                >
+              </li>
+            </ul>
+
+            <!-- Rating block exactly as image: left side star counter + right side stars -->
+            <div class="rating-system-wrapper">
+              <div class="rating-counter-container">
+                <i class="fas fa-star counter-star"></i>
+                <div class="rating-counter" id="ratingCount">0</div>
+                <div class="rating-label">Total Ratings</div>
+              </div>
+              <div class="footer-rating-container">
+                <div class="star-rating-section">
+                  <h4>Rate Our Website</h4>
+                  <div class="star-container" id="starContainer">
+                    <span class="star" data-rating="1">☆</span>
+                    <span class="star" data-rating="2">☆</span>
+                    <span class="star" data-rating="3">☆</span>
+                    <span class="star" data-rating="4">☆</span>
+                    <span class="star" data-rating="5">☆</span>
+                  </div>
+                  <div class="rating-actions">
+                    <button class="submit-rating" id="submitRating" disabled>
+                      <i class="fas fa-star"></i> Submit Rating
+                    </button>
+                    <div class="thank-you-message" id="thankYouMessage">
+                      Thank you for your feedback!
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            Copyright ©2024, RID | TWF (TWKSAA WELFARE FOUNDATION). All Rights
+            Reserved.
+          </p>
+          <div class="footer-links-bottom">
+            <a href="#">About Us</a>
+            <a href="#">Terms & Conditions</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Disclaimer</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+        <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let loggedIn = false;
+      function handleLogin() {
+        loggedIn = true;
+        const loginBtn = document.getElementById("loginBtn");
+        if (loginBtn) {
+          loginBtn.innerHTML = '<i class="bi bi-person-check"></i> Logged in';
+          loginBtn.classList.remove("btn-outline-success");
+          loginBtn.classList.add("btn-success");
+        }
+        alert('✅ Logged in as "researcher@ieee.org" (demo)');
+      }
+      function handleUpload() {
+        if (!loggedIn) return alert("🔒 Please login first");
+        const t = prompt(
+          "Enter paper title (demo upload):",
+          "My IEEE research",
+        );
+        if (t) {
+          alert(`📄 "${t}" uploaded (demo).`);
+          addDemoPaper(t);
+        }
+      }
+      function addDemoPaper(title) {
+        const container = document.getElementById("uploadList");
+        if (!container) return;
+        const d = document.createElement("div");
+        d.className = "paper-card";
+        d.innerHTML = `<div class="paper-title"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>${title}</div><div class="paper-meta"><span><i class="bi bi-person"></i> You (just uploaded)</span><span><i class="bi bi-calendar"></i> ${new Date().toLocaleDateString()}</span><span><i class="bi bi-tag"></i> demo</span></div>`;
+        container.prepend(d);
+      }
+      function loadSamplePapers() {
+        const c = document.getElementById("uploadList");
+        if (!c) return;
+        c.innerHTML = "";
+        const samples = [
+          {
+            title: "Deep Learning for 6G Networks",
+            author: "Lee et al.",
+            date: "2026-02-10",
+            tags: "comms",
+          },
+          {
+            title: "Quantum Computing in IoT",
+            author: "Narang, A.",
+            date: "2026-02-07",
+            tags: "quantum",
+          },
+        ];
+        samples.forEach((p) => {
+          const card = document.createElement("div");
+          card.className = "paper-card";
+          card.innerHTML = `<div class="paper-title"><i class="bi bi-file-earmark-text-fill me-2 text-primary"></i>${p.title}</div><div class="paper-meta"><span><i class="bi bi-person"></i> ${p.author}</span><span><i class="bi bi-calendar"></i> ${new Date(p.date).toLocaleDateString()}</span><span><i class="bi bi-tag"></i> ${p.tags}</span></div>`;
+          c.appendChild(card);
+        });
+      }
+      function updateMaintenanceHeader() {
+        const h = document.getElementById("maintenanceHeader");
+        const now = new Date();
+        h.textContent = `🛠️ 360° rotation active · ${now.toLocaleDateString()} · ${now.toLocaleTimeString()} · RID with rotating carousel 🛠️`;
+      }
+      window.onload = () => {
+        loadSamplePapers();
+        updateMaintenanceHeader();
+        setInterval(updateMaintenanceHeader, 1000);
+      };
+      // Star rating functionality with GOLD color
+      const stars = document.querySelectorAll(".star");
+      const submitBtn = document.getElementById("submitRating");
+      const ratingCount = document.getElementById("ratingCount");
+      const thankYouMsg = document.getElementById("thankYouMessage");
+      let selectedRating = 0;
+      let totalRatings = 0;
+
+      // Clear all stars (remove gold color)
+      function clearStars() {
+        stars.forEach((star) => {
+          star.classList.remove("active");
+          star.classList.remove("selected");
+          star.style.color = "#aaa"; // default gray
+        });
+      }
+
+      // Set stars to gold up to the selected rating
+      function setStarsGold(rating) {
+        for (let i = 0; i < rating; i++) {
+          stars[i].classList.add("active");
+          stars[i].classList.add("selected");
+          stars[i].style.color = "#FFD700"; // gold
+        }
+      }
+
+      // Star click event
+      stars.forEach((star) => {
+        star.addEventListener("click", function () {
+          selectedRating = parseInt(this.getAttribute("data-rating"));
+          clearStars();
+          setStarsGold(selectedRating);
+          submitBtn.disabled = false;
+        });
+
+        // Optional: hover effect
+        star.addEventListener("mouseenter", function () {
+          const hoverRating = parseInt(this.getAttribute("data-rating"));
+          clearStars();
+          for (let i = 0; i < hoverRating; i++) {
+            stars[i].style.color = "#FFD700";
+          }
+        });
+
+        star.addEventListener("mouseleave", function () {
+          clearStars();
+          if (selectedRating > 0) {
+            setStarsGold(selectedRating);
+          }
+        });
+      });
+
+      // Submit rating
+      submitBtn.addEventListener("click", function () {
+        if (selectedRating > 0) {
+          totalRatings++;
+          ratingCount.textContent = totalRatings;
+          submitBtn.disabled = true;
+          thankYouMsg.style.display = "block";
+          setTimeout(() => {
+            thankYouMsg.style.display = "none";
+          }, 3000);
+        }
+      });
+    </script>
+  </body>
+</html>

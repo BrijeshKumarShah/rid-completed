@@ -12,7 +12,12 @@ const { sendEmail } = require("../utils/sendEmail");
 // authController.js
 exports.login = async (req, res) => {
   let { email, password } = req.body;
+  if (!email) {
+    return res.status(400).json({ success: false, message: "Email is required" });
+  }
+
   email = email.toLowerCase().trim();
+
 
 
   try {
@@ -56,7 +61,7 @@ exports.login = async (req, res) => {
 
     // 🔹 Role-based redirect
     if (user.role === "student") {
-      return res.redirect("/student-dashboard");
+      return res.redirect("/RTS/public/main.html");
     }
 
     if (user.role === "teacher") {
@@ -64,6 +69,7 @@ exports.login = async (req, res) => {
     }
 
     if (user.role === "organisation") {
+
       if (user.organisationType === "Library") {
         return res.redirect("/library-dashboard");
       }
@@ -76,9 +82,8 @@ exports.login = async (req, res) => {
         return res.redirect("/coaching-dashboard");
       }
 
-      return res.redirect("/organisation-dashboard");
+      return res.redirect("/organisation");
     }
-
 
     if (user.role === "admin") {
       return res.redirect("/admin");
@@ -149,19 +154,19 @@ exports.resetPassword = async (req, res) => {
 
   let user = await User.findOne({ email });
 
-if (!user) {
-  const Teacher = require("../models/Teacher");
-  user = await Teacher.findOne({ email });
-}
+  if (!user) {
+    const Teacher = require("../models/Teacher");
+    user = await Teacher.findOne({ email });
+  }
 
-if (!user) {
-  const Organisation = require("../models/Organisation");
-  user = await Organisation.findOne({ email });
-}
+  if (!user) {
+    const Organisation = require("../models/Organisation");
+    user = await Organisation.findOne({ email });
+  }
 
-if (!user) {
-  return res.status(404).json({ message: "User not found" });
-}
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10); // ✅ hash password
   user.password = hashedPassword;

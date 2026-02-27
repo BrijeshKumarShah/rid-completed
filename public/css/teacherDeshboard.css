@@ -2586,6 +2586,7 @@ body {
     }
 }
 
+<<<<<<< HEAD
 }
 /* ============================================ */
 /* BIRTHDAY MODAL BUTTONS - EK LINE ME FIXED */
@@ -2793,3 +2794,16 @@ body {
         flex-direction: row !important;  /* Column ko wapas row karo */
     }
 }
+=======
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+
+
+
+
+
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849

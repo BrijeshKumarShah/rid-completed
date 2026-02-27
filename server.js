@@ -13,6 +13,8 @@ const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const nodemailer = require("nodemailer");
 const dashboardRoutes = require("./routes/dashboard-count-all-system.js");
+const candidateRoutes = require("./routes/candidateRoutes.js");
+
 
 // Load environment variables
 dotenv.config();
@@ -105,7 +107,16 @@ app.use(
 
 // ========== CREATE UPLOAD DIRECTORIES ==========
 const ensureUploadDirs = () => {
+<<<<<<< HEAD
   const directories = ["public/uploads/pdfs", "public/uploads/covers"];
+=======
+   const directories = [
+    'public/uploads/pdfs',
+    'public/uploads/covers',
+    'uploads/research'
+];
+
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849
 
   directories.forEach((dir) => {
     const fullPath = path.join(__dirname, dir);
@@ -123,6 +134,7 @@ ensureUploadDirs();
 const configureMiddleware = () => {
   app.use(cookieParser());
 
+<<<<<<< HEAD
   app.use(
     fileUpload({
       useTempFiles: true,
@@ -130,11 +142,22 @@ const configureMiddleware = () => {
       limits: { fileSize: 100 * 1024 * 1024 },
     }),
   );
+=======
+  // ❌ express-fileupload remove karo (multer use ho raha hai)
+  // app.use(
+  //   fileUpload({
+  //     useTempFiles: true,
+  //     tempFileDir: "/tmp/",
+  //     limits: { fileSize: 100 * 1024 * 1024 },
+  //   })
+  // );
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849
 
   app.use(passport.initialize());
   app.use(passport.session());
   require("./config/passport")(passport);
 };
+
 
 // ========== VIEW ENGINE SETUP ==========
 const configureViews = () => {
@@ -502,6 +525,7 @@ app.use("/ai", aiRoutes);
 const AddvanceAnalyticsRoutes = require("./routes/Add-versionAnalyticsRoutes.js");
 app.use("/api/teacher/analytics", AddvanceAnalyticsRoutes);
 app.use("/dashboard", dashboardRoutes);
+<<<<<<< HEAD
 app.get("/teacher-research-papper", (req, res) => {
   res.render("tracher_deshboard/advance-version/Research-papper/index.ejs");
 });
@@ -518,10 +542,67 @@ app.get("/research-create", (req, res) => {
 app.get("/research-login", (req, res) => {
   res.render("Research_dashboard/Authentication/login.ejs");
 });
+=======
+app.get("/research-papper",(req,res)=>{
+  res.render("tracher_deshboard/advance-version/Research-papper/index.ejs")
+})
+app.use("/uploads", express.static("uploads"));
+const researchRoutes = require("./routes/researchRoutes");
+app.use("/api/research", researchRoutes);
+
+//===role by login pages origanition pages ===========================
+app.get("/library-dashboard",(req,res)=>{
+  res.render("organisation/library-dashboard.ejs")
+
+})
+app.get("/dca-dashboard",(req,res)=>{
+  res.render("organisation/dca-dashboard.ejs")
+  
+})
+app.get("/coaching-dashboard",(req,res)=>{
+  res.render("organisation/coaching-dashboard.ejs")
+  
+})
+// Research Papers
+app.get("/research-paper", (req, res) => {
+  res.render("Research-Papers/Home");
+});
+
+//typing software
+app.get("/typing-software",(req,res)=>{
+  res.render("typing-software/main.ejs")
+})
+
+app.get("/com",(req,res)=>{
+  res.render("com/main.ejs")
+})
+
+// before configureRoutes()
+app.use("/api/candidates", candidateRoutes);
+
+
+app.get("/research-dashboard",(req,res)=>{
+  res.render("organisation/research-dashboard.ejs")
+
+})
+
+// ye previous year paper ke liye h
+
+const previousRoutes = require("./routes/previousyear");
+app.use("/", previousRoutes);
+
+app.use("/uploads", express.static("uploads"));
+
+// ======= MAIN ROUTES (404 is inside this) =======
+
+
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849
 
 configureRoutes();
+
 
 // ========== START SERVER ==========
 app.listen(port, () => {
   console.log(`\n✅ Server is running on http://localhost:${port}`);
 });
+

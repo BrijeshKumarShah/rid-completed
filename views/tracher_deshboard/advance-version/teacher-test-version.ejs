@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/teacher-advance.css">
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  
+
 </head>
 
 <body>
     <script>
-    const TEACHER_ID = "<%= teacher._id %>";
-</script>
+        const TEACHER_ID = "<%= teacher._id %>";
+    </script>
 
     <div class="main-container">
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -715,6 +715,7 @@
 
                     <!-- Research Papers Section -->
                     <div id="research-section" class="hidden">
+
                         <div class="lock-overlay" id="research-lock">
                             <div class="lock-message">
                                 <div class="lock-icon-large">
@@ -722,9 +723,7 @@
                                 </div>
                                 <h3>Research Papers Locked</h3>
                                 <p>This feature is only available after payment.</p>
-                                <p>Please complete the payment to access research papers.</p>
-                                <button class="btn btn-primary" style="margin-top: 20px;"
-                                    id="goto-payment-from-research">
+                                <button class="btn btn-primary" id="goto-payment-from-research">
                                     <i class="fas fa-credit-card"></i> Go to Payment
                                 </button>
                             </div>
@@ -734,30 +733,55 @@
                             <i class="fas fa-file-pdf"></i>
                             <h2>Research Papers Library</h2>
                         </div>
-
-                        <div class="card">
+                        <form id="research-form" class="card" enctype="multipart/form-data">
                             <h3><i class="fas fa-upload"></i> Upload Research Paper</h3>
+
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="research-subject" name="subject"
+                                    placeholder="Enter research subject">
+                            </div>
+
                             <div class="form-group">
                                 <label>Paper Title</label>
-                                <input type="text" id="research-title" placeholder="Enter research title">
+                                <input type="text" id="research-title" name="title" placeholder="Enter research title">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Author Name</label>
+                                <input type="text" id="research-author" name="author" placeholder="Enter author name">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Publication Year</label>
+                                <input type="number" id="research-year" name="year" placeholder="e.g. 2024">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Journal / Publisher</label>
+                                <input type="text" id="research-journal" name="journal"
+                                    placeholder="e.g. Nature, Science, PRL">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Access Type</label>
+                                <select id="research-access" name="access">
+                                    <option value="public">Public</option>
+                                    <option value="private">Private</option>
+                                </select>
                             </div>
 
                             <div class="form-group">
                                 <label>Upload PDF</label>
-                                <input type="file" id="research-file" accept="application/pdf">
+                                <input type="file" id="research-file" name="file" accept="application/pdf">
                             </div>
 
-                            <button class="btn btn-primary" id="upload-research-btn" onclick="research()">
+                            <button type="button" class="btn btn-primary" onclick="research()">
                                 <i class="fas fa-upload"></i> Upload Paper
                             </button>
-                        </div>
+                        </form>
 
-                        <div class="card">
-                            <h3><i class="fas fa-book"></i> Uploaded Papers</h3>
-                            <div id="research-list">
-                                <p style="color:#7f8c8d;">No research papers uploaded yet.</p>
-                            </div>
-                        </div>
+
                     </div>
 
                     <!-- Notes Upload Section -->
@@ -808,6 +832,8 @@
 
                     <!-- Previous Year Papers Section -->
                     <div id="previous-section" class="hidden">
+
+                        <!-- Lock Section -->
                         <div class="lock-overlay" id="previous-lock">
                             <div class="lock-message">
                                 <div class="lock-icon-large">
@@ -822,73 +848,384 @@
                             </div>
                         </div>
 
+                        <!-- Title -->
                         <div class="page-title">
                             <i class="fas fa-folder-open"></i>
                             <h2>Previous Year Papers</h2>
+                            <button onclick="previous()"><span>←</span> Go to dashboard</button>
                         </div>
 
+                        <!-- Upload Form -->
                         <div class="card">
                             <h3><i class="fas fa-upload"></i> Upload Paper</h3>
 
-                            <div class="form-group">
-                                <label>Paper Title</label>
-                                <input type="text" id="previous-title" placeholder="Enter paper title">
-                            </div>
+                            <form action="/upload-previous-paper" method="POST" enctype="multipart/form-data">
 
-                            <div class="form-group">
-                                <label>Upload PDF</label>
-                                <input type="file" id="previous-file" accept="application/pdf">
-                            </div>
+                                <div class="form-group">
+                                    <label>Paper Title</label>
+                                    <input type="text" name="title" placeholder="Enter paper title" required>
+                                </div>
 
-                            <button class="btn btn-primary" id="upload-previous-btn">
-                                <i class="fas fa-upload"></i> Upload Paper
-                            </button>
+                                <div class="form-group">
+                                    <label>Upload PDF</label>
+                                    <input type="file" name="previous-file" accept="application/pdf" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload"></i> Upload Paper
+                                </button>
+
+                            </form>
                         </div>
 
-                        <div class="card">
-                            <h3><i class="fas fa-book"></i> Uploaded Papers</h3>
-                            <div id="previous-list">
-                                <p style="color:#7f8c8d;">No previous papers uploaded yet.</p>
+                        <footer class="footer-compact">
+                            <div class="footer-grid-compact">
+                                <div class="footer-section">
+                                    <div class="rid-title-compact">Research Innovation & Discovery</div>
+                                    <div class="rid-sub-compact">RID</div>
+                                    <p><i class="fas fa-map-marker-alt"></i> Mlg. 72, Rajiv Nagar, A Sector, Aayodhya
+                                        bypass Bhopal, MP
+                                        (462022)</p>
+                                    <p><i class="fas fa-envelope"></i> ridorg.in@gmail.com</p>
+                                    <p><i class="fas fa-phone-alt"></i> +91-9202707903</p>
+                                </div>
+                                <div class="footer-section">
+                                    <h4 style="margin-bottom:8px; color:#ffda88; font-size:0.9rem;">Topics</h4>
+                                    <ul>
+                                        <li>▶ Computers & AI</li>
+                                        <li>▶ Space / Data Science</li>
+                                        <li>▶ Renewable Energy</li>
+                                    </ul>
+                                </div>
+                                <div class="footer-section">
+                                    <h4 style="margin-bottom:6px; color:#ffda88; font-size:0.9rem;">Quick</h4>
+                                    <ul>
+                                        <li><a href="#">About RID</a></li>
+                                        <li><a href="#">Research Papers</a></li>
+                                        <li><a href="#">Innovation Hub</a></li>
+                                    </ul>
+                                    <div style="display: flex; gap: 12px; margin-top:6px;">
+                                        <a href="#" style="color:white !important;"><i
+                                                class="fab fa-facebook-f"></i></a>
+                                        <a href="#" style="color:white !important;"><i class="fab fa-youtube"></i></a>
+                                        <a href="#" style="color:white !important;"><i class="fab fa-instagram"></i></a>
+                                        <a href="#" style="color:white !important;"><i class="fas fa-envelope"></i></a>
+                                    </div>
+                                </div>
+                                <div class="footer-section">
+                                    <h4 style="margin-bottom:5px; color:#ffda88; font-size:0.9rem;">Rate Us</h4>
+                                    <div class="rating-stars-compact">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                            class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                            class="fas fa-star"></i>
+                                    </div>
+                                    <button class="rating-btn-compact" onclick="alert('⭐ rating demo')">Submit</button>
+                                </div>
                             </div>
+                            <div class="footer-bottom-compact">
+                                <span>©2024, RID | TWF (TWKSAA WELFARE FOUNDATION). All rights reserved.</span>
+                            </div>
+                            <div class="footer-bottom-compact" style="border-top:none; padding-top:0;">
+                                <a href="#">About Us</a> | <a href="#">Terms</a> | <a href="#">Privacy</a> | <a
+                                    href="#">Disclaimer</a>
+                                | <a href="#">Contact</a>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+
+                <!-- Syllabus Manager Section -->
+                <div id="syllabus-section" class="hidden">
+                    <div class="lock-overlay" id="syllabus-lock">
+                        <div class="lock-message">
+                            <div class="lock-icon-large">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h3>Syllabus Manager Locked</h3>
+                            <p>This feature is only available after payment.</p>
+                            <button class="btn btn-primary" id="goto-payment-from-syllabus">
+                                <i class="fas fa-credit-card"></i> Go to Payment
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Syllabus Manager Section -->
-                    <div id="syllabus-section" class="hidden">
-                        <div class="lock-overlay" id="syllabus-lock">
-                            <div class="lock-message">
-                                <div class="lock-icon-large">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                                <h3>Syllabus Manager Locked</h3>
-                                <p>This feature is only available after payment.</p>
-                                <button class="btn btn-primary" id="goto-payment-from-syllabus">
-                                    <i class="fas fa-credit-card"></i> Go to Payment
-                                </button>
-                            </div>
-                        </div>
+                    <div class="page-title">
+                        <i class="fas fa-list"></i>
+                        <h2>Syllabus Manager</h2>
+                    </div>
 
-                        <div class="page-title">
-                            <i class="fas fa-list"></i>
-                            <h2>Syllabus Manager</h2>
+                    <div class="card">
+                        <h3><i class="fas fa-plus"></i> Add New Topic</h3>
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <input type="text" placeholder="Enter subject">
                         </div>
+                        <div class="form-group">
+                            <label>Topic</label>
+                            <input type="text" placeholder="Enter topic name">
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Topic
+                        </button>
+                    </div>
 
-                        <div class="card">
-                            <h3><i class="fas fa-plus"></i> Add New Topic</h3>
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <input type="text" placeholder="Enter subject">
+                    <div class="card">
+                        <h3><i class="fas fa-book"></i> Saved Topics</h3>
+                        <p style="color:#7f8c8d;">No syllabus topics added yet.</p>
+                    </div>
+                </div>
+
+                <!-- Calendar Section -->
+                <div id="calendar-section" class="hidden">
+                    <div class="lock-overlay" id="calendar-lock">
+                        <div class="lock-message">
+                            <div class="lock-icon-large">
+                                <i class="fas fa-lock"></i>
                             </div>
-                            <div class="form-group">
-                                <label>Topic</label>
-                                <input type="text" placeholder="Enter topic name">
-                            </div>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-save"></i> Save Topic
+                            <h3>Calendar Locked</h3>
+                            <p>This feature is only available after payment.</p>
+                            <button class="btn btn-primary" id="goto-payment-from-calendar">
+                                <i class="fas fa-credit-card"></i> Go to Payment
                             </button>
                         </div>
+                    </div>
+
+                    <div class="page-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h2>Teaching Calendar</h2>
+                    </div>
+
+                    <div class="card">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                            <button class="btn btn-secondary" id="prev-month">‹ Prev</button>
+                            <h3 id="calendar-month"></h3>
+                            <button class="btn btn-secondary" id="next-month">Next ›</button>
+                        </div>
+
+                        <div id="calendar-grid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px;">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-list"></i> Events</h3>
+                        <div id="event-list">
+                            <p style="color:#7f8c8d;">No events added.</p>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Python Test Service Section -->
+                <div id="python-service-section" class="hidden">
+                    <div class="lock-overlay" id="python-service-lock">
+                        <div class="lock-message">
+                            <div class="lock-icon-large">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h3>Python Service Locked</h3>
+                            <p>This feature is only available after payment.</p>
+                            <p>Please complete the payment to access Python Test Service.</p>
+                            <button class="btn btn-primary" style="margin-top: 20px;" id="goto-payment-from-python">
+                                <i class="fas fa-credit-card"></i> Go to Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-title">
+                        <i class="fab fa-python"></i>
+                        <h2>Python Test Service</h2>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-folder"></i> Transloter desbords</h3>
+                        <p>Transloter desbords contain this files .</p>
+                    </div>
+                </div>
+
+                <!-- Calculator Section -->
+                <div id="calculator-section" class="hidden">
+                    <div class="lock-overlay" id="calculator-lock">
+                        <div class="lock-message">
+                            <div class="lock-icon-large">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h3>Calculator Locked</h3>
+                            <p>This feature is only available after payment.</p>
+                            <button class="btn btn-primary" id="goto-payment-from-calculator">
+                                <i class="fas fa-credit-card"></i> Go to Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-title">
+                        <i class="fas fa-calculator"></i>
+                        <h2>Calculator</h2>
+                    </div>
+
+                    <div class="card">
+                        <input type="text" id="calc-display" style="width:100%; padding:10px; font-size:1.2rem;"
+                            readonly>
+
+                        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:10px;">
+                            <button onclick="calc('7')">7</button>
+                            <button onclick="calc('8')">8</button>
+                            <button onclick="calc('9')">9</button>
+                            <button onclick="calc('/')">÷</button>
+
+                            <button onclick="calc('4')">4</button>
+                            <button onclick="calc('5')">5</button>
+                            <button onclick="calc('6')">6</button>
+                            <button onclick="calc('*')">×</button>
+
+                            <button onclick="calc('1')">1</button>
+                            <button onclick="calc('2')">2</button>
+                            <button onclick="calc('3')">3</button>
+                            <button onclick="calc('-')">−</button>
+
+                            <button onclick="calc('0')">0</button>
+                            <button onclick="calc('.')">.</button>
+                            <button onclick="calculate()">=</button>
+                            <button onclick="calc('+')">+</button>
+
+                            <button onclick="clearCalc()" style="grid-column:span 4;">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Alerts Section -->
+                <div id="alerts-section" class="hidden">
+                    <div class="lock-overlay" id="alerts-lock">
+                        <div class="lock-message">
+                            <div class="lock-icon-large">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h3>Email Alerts Locked</h3>
+                            <p>This feature is only available after payment.</p>
+                            <button class="btn btn-primary" id="goto-payment-from-alerts">
+                                <i class="fas fa-credit-card"></i> Go to Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-title">
+                        <i class="fas fa-envelope"></i>
+                        <h2>Email / SMS Alerts</h2>
+                    </div>
+                    <form id="email-form">
 
                         <div class="card">
+                            <h3><i class="fas fa-paper-plane"></i> Send Email to Student</h3>
+
+                            <div class="form-group">
+                                <label>From (Teacher Email)</label>
+                                <input type="email" id="teacher-email" value="<%= teacher.email %>" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Student Email</label>
+                                <input type="email" id="student-email" placeholder="Enter student email">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="email-subject" placeholder="Enter subject">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea id="email-message" rows="4" placeholder="Write your message..."></textarea>
+                            </div>
+
+                            <button class="btn btn-primary" id="send-email-btn">
+                                <i class="fas fa-paper-plane"></i> Send Email
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics-section" class="hidden">
+                    <div class="lock-overlay" id="analytics-lock">
+                        <div class="lock-message">
+                            <div class="lock-icon-large">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h3>Analytics Locked</h3>
+                            <p>This feature is only available after payment.</p>
+                            <p>Please complete the payment to access Result Sections .</p>
+                            <button class="btn btn-primary" style="margin-top: 20px;" id="goto-payment-from-analytics">
+                                <i class="fas fa-credit-card"></i> Go to Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-title">
+                        <i class="fas fa-chart-bar"></i>
+                        <h2>Result Sections</h2>
+                    </div>
+
+                    <!-- Professional Analytics Card -->
+                    <div class="card analytics-card">
+                        <h3><i class="fas fa-chart-pie"></i> Performance Analytics</h3>
+                        <p>
+                            View detailed analytics about your tests, student performance,
+                            and engagement metrics.
+                        </p>
+
+                        <div class="analytics-table-wrapper">
+                            <table class="analytics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Test Name</th>
+                                        <th>Subject</th>
+                                        <th>Students</th>
+                                        <th>Avg Score</th>
+                                        <th>Time</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="analytics-cards-container">
+                                    <tr>
+                                        <td colspan="7" class="analytics-loading">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading analytics...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="hidden">
+                    <div class="lock-overlay" id="settings-lock">
+                        <div class="lock-message">
+                            <div class="lock-icon-large">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h3>Settings Locked</h3>
+                            <p>This feature is only available after payment.</p>
+                            <p>Please complete the payment to access settings.</p>
+                            <button class="btn btn-primary" style="margin-top: 20px;" id="goto-payment-from-settings">
+                                <i class="fas fa-credit-card"></i> Go to Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-title">
+                        <i class="fas fa-cog"></i>
+                        <h2>Settings</h2>
+                    </div>
+
+                    <div class="settings-container">
+                        <!-- Profile Settings -->
+                        <div class="card">
+<<<<<<< HEAD
                             <h3><i class="fas fa-book"></i> Saved Topics</h3>
                             <p style="color:#7f8c8d;">No syllabus topics added yet.</p>
                         </div>
@@ -1312,56 +1649,106 @@
                                     </div>
                                     <button type="button" class="btn btn-primary" id="save-profile-btn">
                                         <i class="fas fa-save"></i> Save Profile Changes
+=======
+                            <h3><i class="fas fa-user-circle"></i> Profile Settings</h3>
+                            <div class="profile-settings">
+                                <div class="profile-image-container">
+                                    <img id="profile-image" class="profile-image" src="" alt="Profile Photo">
+                                    <button class="profile-upload-btn" id="uploadProfileBtn">
+                                        <i class="fas fa-camera"></i>
+>>>>>>> 40e3a019c3f8b989a9c13b27f1a7b5bc59052849
                                     </button>
-                                </form>
-                            </div>
+                                    <input type="file" id="profile-photo-input" class="file-input" accept="image/*">
+                                </div>
+                                <div class="profile-info">
+                                    <p><strong>Name:</strong>
+                                        <%= teacher.name %>
+                                    </p>
+                                    <p><strong>Email:</strong>
+                                        <%= teacher.email %>
+                                    </p>
 
-                            <!-- Notification Settings -->
-                            <div class="card">
-                                <h3><i class="fas fa-bell"></i> Notification Settings</h3>
-                                <div class="checkbox-group">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="email-notifications" checked>
-                                        <span>Email Notifications</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="test-reminders" checked>
-                                        <span>Test Reminders</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="feature-updates">
-                                        <span>New Feature Announcements</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="student-submissions">
-                                        <span>Student Submission Alerts</span>
-                                    </label>
+                                    <p><strong>Account Type:</strong> <span id="settings-account-type">Free
+                                            Account</span></p>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Theme Settings -->
-                            <div class="card">
-                                <h3><i class="fas fa-palette"></i> Theme Settings</h3>
-                                <div class="radio-group">
-                                    <label class="radio-label">
-                                        <input type="radio" name="theme" value="light" checked>
-                                        <span>Light Theme</span>
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="theme" value="dark">
-                                        <span>Dark Theme</span>
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="theme" value="auto">
-                                        <span>Auto (Follow System)</span>
-                                    </label>
+                        <!-- Account Settings -->
+                        <div class="card">
+                            <h3><i class="fas fa-user-cog"></i> Account Settings</h3>
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="display-name">Display Name</label>
+                                    <input type="text" id="display-name" value="<%= teacher.name %>">
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" value="<%= teacher.email %>">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="timezone">Timezone</label>
+                                    <select id="timezone">
+                                        <option value="UTC-5">Eastern Time (ET)</option>
+                                        <option value="UTC-6">Central Time (CT)</option>
+                                        <option value="UTC-7">Mountain Time (MT)</option>
+                                        <option value="UTC-8" selected>Pacific Time (PT)</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="save-profile-btn">
+                                    <i class="fas fa-save"></i> Save Profile Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Notification Settings -->
+                        <div class="card">
+                            <h3><i class="fas fa-bell"></i> Notification Settings</h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="email-notifications" checked>
+                                    <span>Email Notifications</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="test-reminders" checked>
+                                    <span>Test Reminders</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="feature-updates">
+                                    <span>New Feature Announcements</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="student-submissions">
+                                    <span>Student Submission Alerts</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Theme Settings -->
+                        <div class="card">
+                            <h3><i class="fas fa-palette"></i> Theme Settings</h3>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="theme" value="light" checked>
+                                    <span>Light Theme</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="theme" value="dark">
+                                    <span>Dark Theme</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="theme" value="auto">
+                                    <span>Auto (Follow System)</span>
+                                </label>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Modal for Create Test -->

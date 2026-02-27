@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RID · focus mode shows stats on finish</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+ <link rel="stylesheet" href="css/typing_software/main.css">
+</head>
+<body>
+    <div class="card" id="mainCard">
+        <div class="header">
+            <h1><i class="fas fa-keyboard"></i> RID Typing Master</h1>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button class="live-timer-btn" id="liveTimerBtn"><i class="fas fa-hourglass-half"></i> <span id="liveTimerSpan">60s</span></button>
+                <button id="startTestBtn"><i class="fas fa-play"></i> Start</button>
+                <button id="focusModeBtn"><i class="fas fa-eye"></i> <span id="focusBtnText">Focus</span></button>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" id="lightMode"><i class="fas fa-sun"></i> Light</button>
+                    <button class="mode-btn" id="darkMode"><i class="fas fa-moon"></i> Dark</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="timer-group" id="timeOptions">
+                <label>⏱️ Timer:</label>
+                <div class="timer-select-wrapper">
+                    <select id="timerSelect">
+                        <option value="30">30 Sec</option>
+                        <option value="60" selected>1 min</option>
+                        <option value="120">2 min</option>
+                        <option value="180">3 min</option>
+                        <option value="300">5 min</option>
+                        <option value="600">10 min</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <span class="badge" id="selectedTimerBadge">1 min</span>
+                </div>
+                <div class="custom-timer-wrapper">
+                    <input type="number" id="customTimer" placeholder="sec" min="5" value="45">
+                    <span style="color:#666; font-size:0.9rem;">sec</span>
+                </div>
+            </div>
+            <div class="language-group">
+                <label>🌐 Language:</label>
+                <select id="languageSelect">
+                    <option value="english"> English</option>
+                    <option value="hindi">🇮🇳 हिन्दी</option>
+                </select>
+            </div>
+            <button id="randomQuoteBtn"><i class="fas fa-quote-right"></i> Random Quote</button>
+            <button id="toggleCustomBtn"><i class="fas fa-pen"></i> Custom Text</button>
+        </div>
+
+        <div class="custom-text-wrapper hidden" id="customTextWrapper">
+            <textarea id="customTextInput" placeholder="Write your custom text here... (then click 'Apply Custom Text')"></textarea>
+            <button id="applyCustomText" class="apply-custom-btn"><i class="fas fa-check"></i> Apply Custom Text</button>
+        </div>
+
+        <div class="progress-container"><div class="progress-bar" id="progressBar" style="width:0%;"></div></div>
+
+        <div class="level-selector-row">
+            <label><i class="fas fa-layer-group"></i> Levels: </span></label>
+            <button id="prevLevelBtn" class="level-nav-btn"><i class="fas fa-chevron-left"></i></button>
+            <div class="level-scroll-container" id="levelScrollContainer">
+                <div class="level-buttons" id="levelButtons"></div>
+            </div>
+            <button id="nextLevelBtn" class="level-nav-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <div class="typing-area" id="typingDisplay"></div>
+        <textarea id="hiddenInput" placeholder="Click here or press Start button to begin typing"></textarea>
+
+        <!-- STATS: the main panel we want to show in focus mode after finish -->
+        <div class="stats">
+            <div class="stat-item"><i class="fas fa-clock fa-xl" style="color:#4263eb;"></i> <span><span class="stat-value" id="timerDisplay">60</span> Sec </span></div>
+            <div class="stat-item"><i class="fas fa-tachometer-alt fa-xl" style="color:#e8590c;"></i> <span><span class="stat-value" id="wpmDisplay">0</span> WPM</span></div>
+            <div class="stat-item"><i class="fas fa-bullseye fa-xl" style="color:#2b8a3e;"></i> <span><span class="stat-value" id="accuracyDisplay">100</span>% Acc</span></div>
+            <div class="stat-item"><i class="fas fa-keyboard fa-xl" style="color:#9c36b5;"></i> <span><span class="stat-value" id="charsTypedDisplay">0</span> Char</span></div>
+            <!-- TOTAL WORDS STAT -->
+            <div class="stat-item"><i class="fas fa-file-alt fa-xl" style="color:#0c6b7e;"></i> <span><span class="stat-value" id="totalWordsStatDisplay">0</span> Total words</span></div>
+            <div class="stat-item"><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <span>Right Words: <span class="word-stat-value" id="rightWordsDisplay">0</span></span></div>
+            <div class="stat-item"><i class="fas fa-times-circle" style="color:#c62828;"></i> <span>Wrong Words: <span class="word-stat-value" id="wrongWordsDisplay">0</span></span></div>
+            <!-- <div class="stat-item"><i class="fas fa-layer-group" style="color:#9c36b5;"></i> <span>Levels Done: <span class="word-stat-value" id="completedLevelsStat">0</span></span></div> -->
+        </div>
+
+        <div class="extra-tools">
+            <button id="restartFocusBtn"><i class="fas fa-sync-alt"></i> Restart</button>
+            <span style="color:#6c86a6;"><i class="fas fa-info-circle"></i> Shortcuts: Ctrl+Enter Restart</span>
+        </div>
+
+        <div class="smart-stats-section">
+            <h3><i class="fas fa-chart-pie"></i> Smart Stats & Wrong keys</h3>
+            <div class="stats-grid">
+                <div><canvas id="wpmChart" style="height:200px; width:100%;"></canvas></div>
+                <div id="problemKeysList"></div>
+            </div>
+        </div>
+
+         <div class="performance-meter-section">
+            <h3><i class="fas fa-dashboard"></i> Performance Meter</h3>
+            <div class="meter-grid" id="meterGrid"></div>
+        </div>
+
+        <!-- result-section (achievements) remains hidden in focus mode even after finish -->
+        <div class="result-section">
+            <div><h3><i class="fas fa-star"></i> Achievements</h3><div class="badge-container" id="badges"><span class="badge">⚡ Ready</span></div></div>
+            <div><h3><i class="fas fa-chart-line"></i> Net WPM</h3><div style="font-size:3rem; font-weight:800;" id="netWpm">0</div></div>
+            <div><h3><i class="fas fa-history"></i> Consistency</h3><div style="font-size:2rem;" id="consistencyDisplay">0%</div></div>
+        </div>
+
+        <div class="description-section">
+            <div class="description-title">
+                <i class="fas fa-info-circle"></i> About RID Typing Master
+            </div>
+            <div class="description-grid">
+                <div class="description-card"><div class="card-icon"><i class="fas fa-rocket"></i></div><div class="card-title">Advanced Typing Platform</div><div class="card-text">RID Typing Master is a professional typing practice platform designed to help users improve their typing speed, accuracy, and overall keyboard proficiency. With a sleek, modern interface and comprehensive features, it caters to everyone from beginners to professionals.</div></div>
+                <div class="description-card"><div class="card-icon"><i class="fas fa-star"></i></div><div class="card-title">Key Features</div><ul class="feature-list"><li><i class="fas fa-check-circle"></i> Real-time WPM tracking</li><li><i class="fas fa-check-circle"></i> Live accuracy monitoring</li><li><i class="fas fa-check-circle"></i> Multiple languages (5+ languages)</li><li><i class="fas fa-check-circle"></i> Custom text and random quotes</li><li><i class="fas fa-check-circle"></i> Dark/Light mode</li><li><i class="fas fa-check-circle"></i> Focus mode</li><li><i class="fas fa-check-circle"></i> Performance Meter & Smart Analytics</li><li><i class="fas fa-check-circle"></i> Auto Level Progression with Cumulative Stats</li></ul></div>
+                <div class="description-card"><div class="card-icon"><i class="fas fa-chart-line"></i></div><div class="card-title">Track Your Progress</div><div class="stats-mini"><div class="stat-mini-item"><div class="stat-mini-value" id="totalTestsStat">0</div><div class="stat-mini-label">Tests</div></div><div class="stat-mini-item"><div class="stat-mini-value" id="avgWpmStat">0</div><div class="stat-mini-label">Avg WPM</div></div><div class="stat-mini-item"><div class="stat-mini-value" id="bestWpmStat">0</div><div class="stat-mini-label">Best</div></div></div><div class="card-text" style="margin-top: 1rem;"><i class="fas fa-trophy" style="color: gold;"></i> Beat your personal best and earn achievements!</div></div>
+                <div class="description-card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-title">Perfect For</div><ul class="feature-list"><li><i class="fas fa-user-graduate"></i> Students preparing for exams</li><li><i class="fas fa-briefcase"></i> Professionals improving productivity</li><li><i class="fas fa-language"></i> Language learners</li><li><i class="fas fa-certificate"></i> Certification seekers</li><li><i class="fas fa-gamepad"></i> Typing enthusiasts</li></ul></div>
+            </div>
+            <div style="margin-top: 2rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;"><i class="fas fa-quote-left" style="color: #1e2b6e; font-size: 1.5rem;"></i><span style="font-weight: 600; color: #1e2b6e;">"RID", Why Practice Typing?</span></div>
+                <div class="para">"RID Typing Master is an advanced, professional typing practice platform designed to help users improve their typing speed, accuracy, and overall keyboard proficiency. With a sleek, modern interface and comprehensive features, it caters to everyone from beginners learning to type to professionals preparing for government exams or certification tests. Join over 10,000+ users who have improved their typing skills with RID Typing Master!"</div>
+            </div>
+        </div>
+    </div>
+    <div class="countdown" id="countdownOverlay">3</div>
+    <canvas class="confetti-canvas" id="confettiCanvas" style="display:none;"></canvas>
+    <!-- celebration div (hidden by default) -->
+    <div id="congratsCelebration" class="celebration-message" style="display: none;"><i class="fas fa-trophy"></i> 🎉 TIME FINISH! 🎉 <i class="fas fa-medal"></i></div>
+
+    <script>
+        (function() {
+            const card = document.getElementById('mainCard');
+            const typingDisplay = document.getElementById('typingDisplay');
+            const hiddenInput = document.getElementById('hiddenInput');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const wpmDisplay = document.getElementById('wpmDisplay');
+            const accuracyDisplay = document.getElementById('accuracyDisplay');
+            const charsTypedDisplay = document.getElementById('charsTypedDisplay');
+            const progressBar = document.getElementById('progressBar');
+            const timerSelect = document.getElementById('timerSelect');
+            const customTimer = document.getElementById('customTimer');
+            const selectedTimerBadge = document.getElementById('selectedTimerBadge');
+            const langSelect = document.getElementById('languageSelect');
+            const focusModeBtn = document.getElementById('focusModeBtn');
+            const focusBtnText = document.getElementById('focusBtnText');
+            const restartFocusBtn = document.getElementById('restartFocusBtn');
+            const lightMode = document.getElementById('lightMode');
+            const darkMode = document.getElementById('darkMode');
+            const badgesDiv = document.getElementById('badges');
+            const netWpmSpan = document.getElementById('netWpm');
+            const consistencySpan = document.getElementById('consistencyDisplay');
+            const meterGrid = document.getElementById('meterGrid');
+            const problemKeysList = document.getElementById('problemKeysList');
+            const randomQuoteBtn = document.getElementById('randomQuoteBtn');
+            const prevLevelBtn = document.getElementById('prevLevelBtn');
+            const nextLevelBtn = document.getElementById('nextLevelBtn');
+            const levelButtonsDiv = document.getElementById('levelButtons');
+            const levelScrollContainer = document.getElementById('levelScrollContainer');
+            const toggleCustomBtn = document.getElementById('toggleCustomBtn');
+            const customTextWrapper = document.getElementById('customTextWrapper');
+            const customTextInput = document.getElementById('customTextInput');
+            const applyCustomText = document.getElementById('applyCustomText');
+            const liveTimerSpan = document.getElementById('liveTimerSpan');
+            const startTestBtn = document.getElementById('startTestBtn');
+            const completedLevelsCount = document.getElementById('completedLevelsCount');
+            const completedLevelsStat = document.getElementById('completedLevelsStat');
+
+            const totalWordsStatDisplay = document.getElementById('totalWordsStatDisplay');
+            const rightWordsDisplay = document.getElementById('rightWordsDisplay');
+            const wrongWordsDisplay = document.getElementById('wrongWordsDisplay');
+            const congratsDiv = document.getElementById('congratsCelebration');
+
+            let audioContext = null;
+            function initAudio() {
+                if (audioContext) return;
+                try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+            }
+            function playSound(type) {
+                initAudio(); if (!audioContext) return; if (audioContext.state === 'suspended') audioContext.resume();
+                const now = audioContext.currentTime;
+                if (type === 'correct') { const osc = audioContext.createOscillator(); const gain = audioContext.createGain(); osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'sine'; osc.frequency.value = 800; gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1); osc.start(now); osc.stop(now + 0.1); }
+                else if (type === 'incorrect') { const osc = audioContext.createOscillator(); const gain = audioContext.createGain(); osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'sawtooth'; osc.frequency.value = 400; gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15); osc.start(now); osc.stop(now + 0.15); }
+                else if (type === 'complete') { const osc1 = audioContext.createOscillator(); const osc2 = audioContext.createOscillator(); const gain = audioContext.createGain(); osc1.connect(gain); osc2.connect(gain); gain.connect(audioContext.destination); osc1.type = 'sine'; osc2.type = 'sine'; osc1.frequency.value = 600; osc2.frequency.value = 800; gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); osc1.start(now); osc2.start(now); osc1.stop(now + 0.3); osc2.stop(now + 0.3); }
+                else if (type === 'level') { const osc = audioContext.createOscillator(); const gain = audioContext.createGain(); osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'triangle'; osc.frequency.value = 500; gain.gain.setValueAtTime(0.07, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08); osc.start(now); osc.stop(now + 0.08); }
+            }
+
+            let wpmChart;
+            let usingCustomText = false;
+            let timeLimit = 60; let timer = timeLimit; let timerInterval = null; let active = false; let startTime = null; let paused = true;
+            let words = []; let typedHistory = []; let wpmHistory = []; let totalKeystrokes = 0; let correctKeystrokes = 0; let errorMap = new Map(); let totalChars = 0; let lastInputLength = 0;
+            
+            // New variables for cumulative stats across levels
+            let isTransitioningLevel = false;
+            let completedLevels = 0;
+            let cumulativeTotalKeystrokes = 0;
+            let cumulativeCorrectKeystrokes = 0;
+            let cumulativeErrorMap = new Map();
+
+            function calculateRightWords() {
+                let rightWordsCount = 0;
+                for (let i = 0; i < words.length; i++) {
+                    const history = typedHistory[i] || [];
+                    if (history.length === words[i].length && history.every(val => val === true)) rightWordsCount++;
+                }
+                return rightWordsCount;
+            }
+            function calculateWrongWords() {
+                let wrongWordsCount = 0;
+                for (let i = 0; i < words.length; i++) {
+                    const history = typedHistory[i] || [];
+                    if (history.includes(false)) wrongWordsCount++;
+                }
+                return wrongWordsCount;
+            }
+            function updateWordStats() {
+                if (totalWordsStatDisplay) totalWordsStatDisplay.textContent = words.length;
+                if (rightWordsDisplay) rightWordsDisplay.textContent = calculateRightWords();
+                if (wrongWordsDisplay) wrongWordsDisplay.textContent = calculateWrongWords();
+                
+                // Update completed levels display
+                if (completedLevelsCount) completedLevelsCount.textContent = completedLevels + ' completed';
+                if (completedLevelsStat) completedLevelsStat.textContent = completedLevels;
+            }
+
+           const levelTexts = [ 
+    // Level 1 - Home row basics with all letters
+    "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z",
+    
+    // Level 2 - Home row practice with ASDF and JKL;
+    "asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl;",
+    
+    // Level 3 - Home row combinations
+    "asdf asdf jkl; jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl;",
+    
+    // Level 4 - Extended home row practice
+    "asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl; asdfjkl;",
+    
+    // Level 5 - Simple words with home row
+    "a sad lad asks a lass a fall day a flask falls all fall a lad asks a sad lass all fall a sad lad asks a lass a flask falls fast all fall a lad asks a sad lass all fall fast",
+    
+    // Level 6 - Words with home row and common letters
+    "sad lad fall fast flask glass pass class ask task last salt shall hall all fall tall wall call ball small shall fall fast glass flask class task pass last",
+    
+    // Level 7 - Short phrases with home row focus
+    "a sad lad asks a lass a flask falls fast all fall a lad asks a sad lass a flask falls a fall day all fall fast a sad lad falls a lass asks all fall fast",
+    
+    // Level 8 - Mix of home row and top row
+    "asdf jkl; asdf jkl; a sad lad asks a flask falls fast all fall asdfjkl; jkl;asdf; a sad fall day asdf jkl; asdf jkl; a sad lad asks a flask falls fast",
+    
+    // Level 9 - Capitalization practice
+    "A Sad Lad Asks A Lass A Flask Falls Fast All Fall A Lad Asks A Sad Lass Falls A Fall Day Falls Fast All Fall Fast A Sad Lad Asks A Lass A Flask Falls Fast All Fall",
+    
+    // Level 10 - Complete sentences for rhythm
+    "A sad lad asks a lass and a flask falls fast. All fall fast when a lad asks a sad lass. A flask falls and all fall fast. A sad lad falls and a lass asks all fall.",
+    
+    // Level 11 - Common English words for typing
+    "The quick brown fox jumps over the lazy dog near the river bank. A wizard and a witch cast spells with magic wands. The five boxing wizards jump quickly and fight bravely in the ring.",
+    
+    // Level 12 - Progressive sentence building
+    "Practice makes perfect when you type every single day without fail. Regular typing practice helps build muscle memory in your fingers. Speed increases naturally when you focus on accuracy first and foremost.",
+    
+    // Level 13 - Focus on accuracy and speed
+    "Typing with accuracy is more important than typing with speed. You must learn to type without looking at the keyboard. Touch typing is a skill that will help you work faster and better.",
+    
+    // Level 14 - Encouragement and motivation
+    "Every expert typist was once a beginner just like you. Keep practicing daily and you will see improvement quickly. Success comes to those who work hard and never give up trying.",
+    
+    // Level 15 - Practical typing advice
+    "Place your fingers on the home row keys and keep them there. Use the correct fingers for each key as you type along. Your speed will increase as you build muscle memory over time.",
+    
+    // Level 16 - Technology and modern life
+    "Computers and smartphones have become essential in our daily lives. Typing skills help you communicate faster through email and chat. Good typists save hours of work every single week.",
+    
+    // Level 17 - Benefits of touch typing
+    "Touch typing allows you to focus on your thoughts not on the keys. You can type faster than you write by hand with practice. This skill helps students and professionals work more efficiently every day.",
+    
+    // Level 18 - Daily practice routine
+    "Set aside fifteen minutes each day for typing practice. You will notice improvement within just a few weeks. Consistency matters more than practicing for hours at one time.",
+    
+    // Level 19 - Goal setting for typing
+    "Set a goal to reach forty words per minute with accuracy. Then work your way up to sixty and beyond over time. Celebrate small victories along your typing journey each week.",
+    
+    // Level 20 - Transition to advanced practice
+    "Now you are ready for more challenging texts and paragraphs. The next levels will introduce longer content and new words. Keep up the good work and continue improving your typing skills daily.",
+    // Level 20
+    "Artificial intelligence and machine learning are revolutionizing industries from healthcare to finance creating new possibilities and challenges for the future workforce. These technologies enable computers to learn from data and make decisions with minimal human intervention. As algorithms become more sophisticated we are seeing applications in autonomous vehicles medical diagnosis and personalized recommendations that were once considered science fiction. The ethical implications of AI continue to spark debate among researchers and policymakers worldwide.",
+    
+    // Level 21
+    "The human brain has an incredible capacity to learn and adapt throughout life a concept known as neuroplasticity which means you can always develop new skills and improve existing ones. This remarkable ability allows us to recover from injuries and adapt to new situations. By challenging ourselves with new experiences and continuous learning we can strengthen neural connections and maintain cognitive function well into old age. The brain's plasticity is truly one of nature's most amazing gifts.",
+    
+    // Level 22
+    "Climate change is one of the most pressing challenges facing humanity requiring immediate action from governments corporations and individuals to reduce carbon emissions and protect the environment. Rising global temperatures are causing more frequent extreme weather events threatening coastal communities and disrupting ecosystems worldwide. Scientists warn that we have a limited window to take meaningful action before reaching irreversible tipping points. The transition to renewable energy sources is essential for a sustainable future.",
+    
+    // Level 23
+    "Effective communication involves not just speaking clearly but also listening actively understanding non-verbal cues and adapting your message to your audience for maximum impact. In today's interconnected world the ability to convey ideas across cultural boundaries has become increasingly important. Good communicators build trust resolve conflicts and inspire others to action. Whether in personal relationships or professional settings mastering this skill can open doors to countless opportunities for growth and collaboration.",
+    
+    // Level 24
+    "The Renaissance period marked a profound transformation in European culture bridging the gap between the Middle Ages and modern history through art science and philosophical inquiry. This golden age produced geniuses like Leonardo da Vinci and Michelangelo whose works continue to inspire awe centuries later. The invention of the printing press revolutionized access to knowledge sparking an intellectual revolution that would eventually lead to the Enlightenment. Classical learning was rediscovered and human potential became the central focus of artistic expression.",
+    
+    // Level 25
+    "Quantum computing harnesses the principles of quantum mechanics to process information in ways that traditional computers cannot potentially solving complex problems in seconds. Unlike classical bits which represent either zero or one quantum bits or qubits can exist in multiple states simultaneously through superposition. This property combined with entanglement allows quantum computers to explore many solutions at once making them ideal for cryptography drug discovery and optimization problems. Major tech companies are racing to build practical quantum machines.",
+    
+    // Level 26
+    "In computer programming algorithms are step-by-step procedures for solving problems forming the foundation of all software development from simple scripts to complex artificial intelligence systems. Understanding data structures and algorithmic thinking helps developers write efficient code that scales well with increasing data volumes. The choice of algorithm can mean the difference between a program that runs in milliseconds versus one that takes hours. Computer science students spend years studying these fundamental concepts that power the digital world.",
+    
+    // Level 27
+    "The global economy operates as an interconnected system where financial markets supply chains and consumer behavior in one region can significantly impact others across the world. A factory shutdown in China can affect car production in Germany while interest rate decisions in the United States influence emerging markets everywhere. This interdependence creates both opportunities and vulnerabilities as demonstrated during the recent pandemic when disruptions rippled through every sector. Understanding these connections is crucial for business leaders and policymakers navigating an increasingly complex world.",
+    
+    // Level 28
+    "Psychology explores the complexities of human behavior and mental processes examining everything from neural activity to social interactions and cultural influences on development. This fascinating field helps us understand why people think feel and act the way they do in various situations. Clinical applications of psychology have led to effective treatments for mental health conditions while research findings inform everything from marketing strategies to educational methods. The human mind remains one of science's greatest mysteries waiting to be fully understood.",
+    
+    // Level 29
+    "Space exploration has led to numerous technological innovations including satellite communications GPS systems and materials science advances that benefit daily life on Earth. The challenge of surviving in harsh environments has spawned inventions like memory foam cordless tools and water purification systems now used worldwide. International collaboration on projects like the International Space Station demonstrates what humanity can achieve when we work together toward common goals. As private companies enter the field the next decades promise exciting developments in space travel and exploration.",
+    
+    // Level 30
+    "The study of history helps us understand how past events shape present circumstances providing valuable lessons for addressing contemporary challenges and building better futures. By examining the rise and fall of civilizations we can identify patterns that repeat across time offering insights into human nature and social dynamics. Historical knowledge fosters critical thinking and helps us question assumptions about our own era. Those who ignore history are often doomed to repeat its mistakes making this subject essential for informed citizenship and wise leadership in any society.",
+    
+    // Level 31
+    "Entrepreneurship requires a unique combination of vision resilience and adaptability as founders navigate uncertain markets while building teams securing funding and iterating their products. Successful entrepreneurs embrace failure as a learning opportunity and persist through countless setbacks on the path to success. The startup ecosystem has created millions of jobs and brought innovations that improve quality of life around the world. Mentorship and access to capital remain critical factors in determining which ventures thrive and which ones fade away despite having great ideas.",
+    
+    // Level 32
+    "Sustainable development aims to meet present needs without compromising future generations balancing economic growth environmental protection and social equity in policy decisions. This holistic approach recognizes that true progress cannot come at the expense of the planet or marginalized communities. Corporations are increasingly adopting sustainability goals as consumers demand ethical practices and regulators impose stricter standards. The transition to a circular economy where waste is minimized and resources are reused presents both challenges and opportunities for innovation across all sectors of the global economy.",
+    
+    // Level 33
+    "The human genome project mapped our genetic blueprint opening new frontiers in personalized medicine where treatments can be tailored to individual DNA profiles for better outcomes. Understanding the genetic basis of diseases has led to targeted therapies with fewer side effects than traditional approaches. Genetic testing can now reveal predispositions to certain conditions allowing for preventive measures before symptoms appear. Ethical questions about genetic privacy and the potential for discrimination remain important considerations as this technology becomes more accessible and integrated into routine healthcare around the world.",
+    
+    // Level 34
+    "Cryptocurrency and blockchain technology represent paradigm shifts in financial systems enabling decentralized transactions and smart contracts without traditional intermediaries like banks. Bitcoin the first cryptocurrency introduced the concept of digital scarcity and proved that peer-to-peer electronic cash was possible. Critics point to volatility energy consumption and regulatory concerns while proponents envision a future where financial power returns to individuals. The technology underlying cryptocurrencies may ultimately prove more transformative than the currencies themselves with applications in supply chain management and digital identity verification.",
+    
+    // Level 35
+    "Epistemology the branch of philosophy concerned with the theory of knowledge examines how we distinguish justified belief from opinion addressing questions about truth evidence and cognition. Philosophers have debated for centuries whether certain knowledge is possible and what criteria determine whether we truly know something. These questions become increasingly relevant in an age of information overload and competing claims about reality. Understanding epistemological concepts helps us navigate a world where misinformation spreads rapidly and critical thinking skills are more essential than ever before for making sound judgments.",
+    
+    // Level 36
+    "Neuroplasticity demonstrates that the brain can reorganize itself throughout life forming new neural connections in response to learning experiences and environmental changes or injuries. This discovery has revolutionized rehabilitation approaches for stroke survivors and individuals with brain injuries. Educational methods now incorporate principles of neuroplasticity to enhance learning outcomes at all ages. The old belief that the adult brain is fixed has been replaced by a more hopeful view of human potential where effort and practice can literally reshape our neural architecture and improve cognitive abilities over time.",
+    
+    // Level 37
+    "The Anthropocene proposed as a new geological epoch recognizes humanity's profound impact on Earth's systems from climate alteration to biodiversity loss and geological transformation. Scientists point to evidence of human influence in sediment layers including plastic pollution radioactive particles from nuclear tests and altered carbon cycles. This concept challenges us to acknowledge our responsibility as stewards of the planet with consequences that will be visible for millions of years. Debates continue about when exactly this epoch began but the underlying message about human power to reshape Earth is increasingly difficult to deny.",
+    
+    // Level 38
+    "Synthetic biology combines engineering principles with biology to design and construct new biological systems potentially solving challenges in medicine manufacturing and environmental sustainability. Researchers have already created bacteria that produce sustainable fuels and yeast engineered to manufacture medicines more efficiently. The field raises important ethical questions about creating artificial life forms and the potential consequences of releasing them into the environment. Responsible development requires careful consideration of risks alongside the tremendous potential benefits that synthetic biology offers for addressing some of humanity's most pressing problems in creative and innovative ways.",
+    
+    // Level 39
+    "Situated in the serene locality of Indrapuri Bhopal RID Research Innovation Discovery of Science stands as a premier destination for academic excellence and scientific exploration. The institute is meticulously designed to nurture young minds by immersing them in the worlds of research and innovation encouraging them to move beyond textbooks and into the realm of real-world discovery. With a curriculum that emphasizes critical analysis and inventive thinking RID empowers students to challenge conventional ideas and develop groundbreaking solutions. By blending state-of-the-art resources with experienced mentorship the institute cultivates a dynamic learning environment where future scientists researchers and innovators are born all within the vibrant educational landscape of Madhya Pradesh.",
+    
+    // Level 40
+    "Ancient civilizations developed remarkable technologies without modern scientific understanding demonstrating human ingenuity across the ages. The Egyptians built pyramids with precise alignment to celestial bodies using simple tools and extraordinary organizational skills. Roman engineers constructed aqueducts and roads that remained functional for centuries after their empire fell. Mayan astronomers calculated planetary movements with impressive accuracy using only naked-eye observations. These achievements remind us that innovation does not always require advanced technology and that practical problem-solving combined with careful observation can yield remarkable results that continue to impress us even today.",
+    
+    // Level 41
+    "The ocean covers more than seventy percent of our planet yet remains largely unexplored with new species discovered on virtually every deep-sea expedition. Marine ecosystems provide food regulate climate and generate most of the oxygen we breathe through phytoplankton photosynthesis. Coral reefs often called rainforests of the sea support an incredible diversity of life despite covering less than one percent of the ocean floor. Human activities threaten these vital systems through overfishing pollution and ocean acidification making marine conservation one of the most urgent environmental priorities requiring international cooperation and sustained commitment from governments and communities worldwide.",
+    
+    // Level 42
+    "Music therapy has emerged as a powerful tool for treating various conditions from autism to depression and Parkinson's disease. Neurological research shows that engaging with music activates multiple brain regions simultaneously creating unique therapeutic opportunities. Patients who have lost the ability to speak due to stroke sometimes can still sing facilitating rehabilitation pathways that traditional therapy cannot access. The rhythmic elements of music can help movement disorders while emotional engagement with songs provides comfort and connection for those struggling with mental health challenges. This growing field demonstrates the profound connection between artistic expression and human wellbeing.",
+    
+    // Level 43
+    "Architecture shapes our daily experiences in ways we often fail to notice influencing mood behavior and even health outcomes through design choices. Natural light exposure affects circadian rhythms and productivity while ceiling height can influence thinking styles with higher ceilings promoting abstract thought. Hospital designs that incorporate views of nature have been shown to speed patient recovery demonstrating the practical importance of thoughtful architecture. As urban populations grow architects face the challenge of creating spaces that are functional sustainable and beautiful while fostering community connection in increasingly dense environments where every square meter must serve multiple purposes.",
+    
+    // Level 44
+    "The Silk Road was not a single route but a vast network of trade paths connecting East Asia to the Mediterranean for over fifteen hundred years. Along these routes traveled not only silk and spices but also ideas technologies religions and diseases that shaped civilizations. Buddhism spread from India to China while papermaking technology traveled westward transforming communication in Europe. The exchange of goods and knowledge along these routes accelerated human progress in ways that still influence our world today demonstrating how cultural interaction drives innovation and how isolation tends to stifle development across all human societies throughout recorded history.",
+    
+    // Level 45
+    "Sleep remains one of biology's great mysteries despite decades of research into its functions and mechanisms. We know that sleep is essential for memory consolidation immune function and metabolic regulation yet we still do not fully understand why consciousness must periodically cease. Chronic sleep deprivation increases risks for numerous health conditions including heart disease diabetes and depression while impairing cognitive performance and emotional regulation. Modern lifestyles often prioritize productivity over rest creating a public health crisis masked as normal behavior. Reclaiming healthy sleep habits may be one of the most important steps we can take for long-term wellbeing in our always-connected world.",
+    
+    // Level 46
+    "Fermentation is one of humanity's oldest biotechnologies transforming foods through microbial activity long before we understood the science involved. This ancient practice preserves food enhances nutritional value and creates flavors impossible to achieve through other means. From cheese and yogurt to bread and beer fermented foods appear in virtually every culinary tradition worldwide suggesting our ancestors independently discovered this process across continents. Modern research reveals that fermented foods support gut health by introducing beneficial bacteria potentially explaining traditional beliefs about their health benefits and confirming that ancient wisdom sometimes anticipates scientific discovery by thousands of years.",
+    
+    // Level 47
+    "The concept of zero revolutionized mathematics and human thought appearing independently in multiple ancient civilizations. While other cultures developed placeholder symbols the Maya in Mesoamerica and mathematicians in India were among the first to treat zero as a number with its own properties. This innovation enabled place value systems that made arithmetic vastly more efficient and eventually allowed for the development of calculus and modern physics. The journey from philosophical concept to mathematical tool illustrates how abstract thinking can have profoundly practical consequences shaping the very foundations of science and technology that define our modern world in countless ways.",
+    
+    // Level 48
+    "Butterfly effects in chaos theory describe how small changes in initial conditions can lead to vastly different outcomes making long-term prediction impossible for certain systems. Weather patterns stock markets and ecosystems all exhibit this sensitivity demonstrating the limits of our ability to forecast complex phenomena. The metaphorical butterfly flapping its wings in Brazil potentially causing a tornado in Texas captures both the interconnectedness of natural systems and the humility required when attempting to model them. This understanding has profound implications for fields from climate science to economics where precise prediction remains an elusive goal despite enormous computational resources being devoted to the task.",
+    
+    // Level 49
+    "The periodic table of elements stands as one of science's most elegant organizational schemes arranging chemical building blocks in ways that reveal patterns and predict undiscovered elements. Dmitri Mendeleev's nineteenth-century creation correctly anticipated properties of elements not yet found demonstrating the power of systematic classification. Today one hundred eighteen confirmed elements fill the table with researchers racing to synthesize new ones that exist for only fractions of a second. The table's structure reflects quantum mechanical principles governing electron configurations showing how fundamental physics determines chemical behavior in patterns that continue to fascinate scientists and students alike across generations.",
+    
+    // Level 50
+    "Language shapes thought in profound ways according to the Sapir-Whorf hypothesis suggesting that the words available to us influence what concepts we can easily grasp. While strong versions of this idea have been largely rejected research confirms that language affects cognition in subtle but significant ways. Speakers of languages that use absolute directional terms instead of relative ones like left and right show remarkable navigational abilities. Color terms influence color perception while grammatical gender can shape how speakers conceptualize objects. These findings reveal the intimate relationship between language and thought challenging assumptions about universal human cognition and highlighting the diversity of human mental experience across different linguistic communities worldwide.",
+    
+    // Level 51
+    "The greenhouse effect is a natural phenomenon that makes Earth habitable by trapping heat in the atmosphere through certain gases like carbon dioxide and water vapor. Without this effect our planet would be frozen and lifeless with average temperatures well below freezing. Human activities have intensified this natural process by releasing enormous quantities of greenhouse gases through burning fossil fuels and deforestation. The resulting global warming threatens to destabilize climate systems that civilizations have relied upon for thousands of years. Understanding this mechanism is essential for developing solutions that preserve the beneficial aspects of the greenhouse effect while reducing dangerous human-caused amplification that puts future generations at risk.",
+    
+    // Level 52
+    "Memory is not a single faculty but a collection of systems working together to encode store and retrieve information across different timescales. Short-term memory holds limited information for seconds while long-term memory can last a lifetime with seemingly unlimited capacity. Procedural memory allows us to ride bicycles without conscious thought while episodic memory stores personal experiences complete with contextual details. Each type of memory involves different brain regions and can be selectively impaired by injury or disease. This complexity explains why memory sometimes fails in frustrating ways and why developing effective learning strategies requires understanding how these different systems interact during the process of acquiring and retaining new knowledge and skills.",
+    
+    // Level 53
+    "Photosynthesis transforms sunlight into chemical energy powering nearly all life on Earth through a process of elegant complexity. Plants algae and some bacteria capture light energy using chlorophyll and use it to split water molecules releasing oxygen and producing carbohydrates from carbon dioxide. This remarkable process not only feeds the planet but also generated the oxygen atmosphere that made animal life possible billions of years ago. Scientists study photosynthesis hoping to replicate its efficiency for solar energy production recognizing that understanding nature's solutions often leads to technological breakthroughs. The green color of leaves is actually reflected light meaning plants reject the green wavelengths while absorbing red and blue for photosynthesis.",
+    
+    // Level 54
+    "Plate tectonics explains Earth's dynamic surface through the slow movement of massive lithospheric plates driven by convection currents in the underlying mantle. This theory relatively recent in geological terms unified observations about earthquakes volcanoes and mountain formation into a coherent framework. Continental drift once dismissed as absurd is now understood as a fundamental Earth process with continents assembling and breaking apart over hundreds of millions of years. The same forces that cause devastating earthquakes also create fertile soils and concentrate mineral deposits essential for civilization. Understanding plate tectonics helps us assess geological hazards and locate resources while revealing Earth as a living planet in constant transformation.",
+    
+    // Level 55
+    "Emotional intelligence involves recognizing understanding and managing our own emotions while perceiving and influencing the feelings of others. This concept popularized in the nineteen nineties encompasses skills that traditional intelligence tests largely ignore. Research suggests that emotional intelligence predicts success in relationships and careers sometimes more strongly than cognitive abilities. Leaders with high emotional intelligence create positive work environments while those lacking it often struggle despite technical competence. Unlike IQ which remains relatively stable emotional intelligence can be developed through practice and reflection offering hope for personal growth. The ability to navigate emotional landscapes proves essential in virtually every human endeavor requiring cooperation and understanding.",
+    
+    // Level 56
+    "The water cycle circulates Earth's most essential compound through evaporation condensation precipitation and collection in an endless global process. Solar energy drives this cycle lifting water into the atmosphere where it travels vast distances before falling as rain or snow. This natural distillation produces fresh water from salty oceans making terrestrial life possible far from coastal areas. Climate change intensifies the cycle causing more extreme droughts and floods as warmer air holds more moisture. Understanding and protecting this cycle becomes increasingly critical as human populations grow and water scarcity affects more regions. Every drop we use has participated in this cycle for billions of years connecting us to the planet's ancient past.",
+    
+    // Level 57
+    "Immunology reveals the astonishing complexity of our body's defense systems protecting against pathogens while avoiding attack on our own tissues. The immune system recognizes millions of potential threats through mechanisms that generate enormous diversity in antigen receptors. Specialized cells coordinate responses with memory cells providing rapid protection against previously encountered pathogens explaining how vaccines work. Autoimmune diseases occur when this sophisticated system mistakenly targets self tissues revealing what happens when careful regulation fails. Modern medicine increasingly harnesses immune mechanisms to treat cancer and other conditions opening new therapeutic frontiers. Understanding immunology has never been more important than during recent pandemic experiences.",
+    
+    // Level 58
+    "The scientific method provides a systematic approach to investigation through observation hypothesis formation experimentation and analysis distinguishing science from other ways of knowing. This process self-corrects over time as findings are tested and refined by independent researchers. While individual studies may prove wrong the collective enterprise advances understanding through rigorous skepticism and openness to revision. The method's power lies not in producing absolute truth but in generating increasingly accurate approximations of reality. Applied consistently it has produced technologies and insights that would seem magical to earlier generations from smartphones to vaccines. Understanding this process helps citizens evaluate claims and participate meaningfully in democratic decisions about science policy.",
+    
+    // Level 59
+    "Biodiversity the variety of life on Earth provides essential services that human societies depend upon for survival and wellbeing. Ecosystems rich in species pollinate crops purify water regulate climate and provide resources for medicine and industry. Each species represents millions of years of evolutionary solutions to environmental challenges representing knowledge we cannot recreate if lost. Current extinction rates far exceed natural background levels primarily due to human activities threatening the web of life that sustains us. Conservation efforts protect not just charismatic species but the ecological networks that maintain planetary health. Preserving biodiversity is not sentimental indulgence but practical necessity for maintaining conditions that support human civilization.",
+    
+    // Level 60
+    "The Industrial Revolution transformed human society beginning in eighteenth-century Britain before spreading worldwide fundamentally altering how people live and work. Mechanization replaced manual labor in textile production while steam engines provided power independent of water wheels enabling factories anywhere. Urban populations exploded as people left farms for industrial cities creating new social classes and challenges. The revolution accelerated technological progress establishing patterns of innovation that continue today. Environmental consequences of burning coal on unprecedented scale laid groundwork for current climate crisis while social reforms eventually addressed some of the worst working conditions. Understanding this transformation helps us navigate current technological revolutions with historical perspective on both benefits and costs.",
+    
+    // Level 61
+    "Photosynthesis transforms sunlight into chemical energy powering nearly all life on Earth through a process of elegant complexity. Plants algae and some bacteria capture light energy using chlorophyll and use it to split water molecules releasing oxygen and producing carbohydrates from carbon dioxide. This remarkable process not only feeds the planet but also generated the oxygen atmosphere that made animal life possible billions of years ago. Scientists study photosynthesis hoping to replicate its efficiency for solar energy production recognizing that understanding nature's solutions often leads to technological breakthroughs. The green color of leaves is actually reflected light meaning plants reject the green wavelengths while absorbing red and blue for photosynthesis.",
+    
+    // Level 62
+    "The electromagnetic spectrum spans from gamma rays with wavelengths smaller than atomic nuclei to radio waves kilometers long with visible light occupying a tiny fraction between. Each type of electromagnetic radiation interacts differently with matter enabling diverse applications from medical imaging to wireless communication. Radio waves penetrate walls making broadcast possible while X-rays pass through soft tissue but not bone creating medical diagnostic images. Infrared reveals heat signatures ultraviolet causes sunburn and microwaves heat food through water molecule excitation. Understanding this spectrum has revolutionized astronomy allowing observation of celestial phenomena invisible to human eyes. The technology exploiting different wavelengths fundamentally shapes modern life in countless ways.",
+    
+    // Level 63
+    "Genetic engineering allows direct manipulation of an organism's DNA creating possibilities unimaginable just decades ago. Using tools like CRISPR scientists can add remove or modify genes with increasing precision offering treatments for genetic disorders and improvements in crop resilience. Agricultural applications have produced plants resistant to pests and diseases reducing pesticide use while enhancing nutritional content. Medical applications include developing personalized cancer therapies and potentially curing inherited diseases before birth. Ethical concerns about germline modifications that would affect future generations and potential ecological impacts of genetically modified organisms require careful consideration. The power to edit life's code brings both tremendous promise and profound responsibility for humanity.",
+    
+    // Level 64
+    "Ocean currents circulate water around the globe distributing heat and nutrients while influencing climate and marine life patterns. Surface currents driven by winds create gyres that concentrate floating debris including the infamous garbage patches. Deep currents driven by temperature and salinity differences slowly move water through ocean basins in a global conveyor belt that takes centuries to complete. These circulation patterns moderate coastal temperatures making some regions habitable that would otherwise be extreme. Climate change threatens to disrupt current systems with potentially catastrophic consequences for weather patterns and marine ecosystems. Understanding ocean circulation is essential for predicting both weather and long-term climate changes affecting billions.",
+    
+    // Level 65
+    "The periodic table organizes chemical elements by atomic number revealing patterns in properties that reflect underlying electron configurations. Elements in the same column share chemical behaviors because their outer electron arrangements are similar explaining why noble gases rarely react while alkali metals combine explosively with water. Mendeleev's nineteenth-century version predicted properties of undiscovered elements demonstrating the table's power beyond mere classification. Today one hundred eighteen confirmed elements occupy seven periods with researchers seeking to extend the table further into unstable superheavy territory. The table's elegant structure reveals deep connections between quantum mechanics and chemistry serving as both practical tool and symbol of scientific achievement.",
+    
+    // Level 66
+    "Behavioral economics challenges traditional assumptions about rational decision-making by incorporating insights from psychology into economic models. People consistently deviate from purely logical choices due to cognitive biases framing effects and social influences that standard theory cannot explain. Concepts like loss aversion where losses feel worse than equivalent gains feel good and present bias favoring immediate over future rewards better predict actual behavior. Nudge theory applies these insights to policy design helping people make better decisions without restricting freedom. This field has transformed understanding of everything from retirement savings to health care choices revealing that humans are predictably irrational in ways economists are still working to understand and incorporate into more accurate models.",
+    
+    // Level 67
+    "Earth's atmosphere consists of layers with distinct characteristics from the troposphere where weather occurs to the exosphere fading into space. The stratosphere contains the ozone layer absorbing harmful ultraviolet radiation making surface life possible. Temperature inversions in the mesosphere create conditions where meteors burn up protecting us from constant bombardment. The ionosphere reflects radio waves enabling long-distance communication while the magnetosphere deflects solar wind preventing atmospheric erosion. Human activities now affect even these high layers through greenhouse gas accumulation and ozone-depleting chemicals. Understanding atmospheric structure helps us appreciate the thin protective envelope surrounding our planet and our growing influence on systems that sustain all life.",
+    
+    // Level 68
+    "The scientific revolution of the sixteenth and seventeenth centuries fundamentally changed how humans understand the natural world replacing ancient authority with empirical observation and mathematical reasoning. Copernicus displaced Earth from the center of the cosmos while Kepler discovered planetary motion laws and Galileo pioneered experimental physics. Newton synthesized these advances into universal laws of motion and gravitation creating a mechanistic universe picture that dominated science for centuries. This period established methods and attitudes that would drive accelerating scientific progress transforming medicine technology and society. The revolution demonstrated that systematic questioning of accepted wisdom could yield profound insights opening pathways to knowledge that continue expanding today.",
+    
+    // Level 69
+    "Consciousness remains one of science's greatest mysteries despite millennia of philosophical inquiry and decades of neuroscientific investigation. We know which brain regions correlate with conscious experience but cannot explain how physical processes generate subjective awareness. Theories range from integrated information approaches to global workspace models yet none fully explain the hard problem of why there is something it is like to be us. Some philosophers propose consciousness may be fundamental to reality while others suggest it emerges from complex information processing. Understanding consciousness could transform medicine artificial intelligence and our conception of humanity's place in the universe making it perhaps the most important unanswered question in all of science.",
+    
+    // Level 70
+    "The carbon cycle moves this essential element through atmosphere oceans living things and geological formations regulating Earth's climate over timescales from seconds to millions of years. Photosynthesis pulls carbon dioxide from air incorporating carbon into plant tissues while respiration and decomposition return it. Ocean absorption stores enormous quantities with plankton transferring carbon to deep sediments when they die. Fossil fuels represent ancient carbon returned to the atmosphere through combustion disrupting natural balances. Human activities now release carbon faster than natural processes can absorb causing atmospheric concentrations to rise at unprecedented rates. Understanding this cycle reveals why reducing emissions matters and how Earth's systems respond to perturbation.",
+    
+    // Level 71
+    "Machine learning algorithms improve through experience identifying patterns in data that humans might never notice. Deep learning using多层神经网络 has revolutionized fields from computer vision to natural language processing achieving superhuman performance in specific tasks. These systems learn representations at multiple levels of abstraction discovering features from raw data without explicit programming. Applications range from medical diagnosis to autonomous vehicles and language translation with new uses constantly emerging. Concerns about bias in training data and lack of interpretability raise important questions about deploying these systems in critical contexts. Understanding both capabilities and limitations of machine learning becomes essential as these technologies increasingly shape decisions affecting human lives.",
+    
+    // Level 72
+    "The hydrologic cycle continuously redistributes Earth's water through evaporation condensation precipitation and flow sustaining all terrestrial life. Solar energy drives this cycle lifting water into atmosphere where it travels thousands of kilometers before falling. Groundwater aquifers store vast quantities accumulated over millennia providing irrigation during dry periods. Human activities alter natural flows through dam construction groundwater extraction and land use changes affecting both water availability and quality. Climate change intensifies the cycle causing more extreme floods and droughts as warmer air holds more moisture. Managing water resources sustainably becomes increasingly critical as populations grow and climate patterns shift beyond historical ranges.",
+    
+    // Level 73
+    "Relativity theory transformed physics by revealing that space and time are not absolute but relative to observer motion with profound implications for our understanding of reality. Special relativity established that light speed is constant and that moving clocks run slow while general relativity described gravity as curvature of spacetime. Predictions including black holes gravitational waves and time dilation have been experimentally confirmed with GPS systems requiring relativistic corrections for accuracy. These theories revealed a universe far stranger than Newtonian physics imagined where massive objects warp spacetime and the universe expands from an initial singularity. Relativity remains essential for understanding cosmos from everyday technology to ultimate fate.",
+    
+    // Level 74
+    "Ecosystems function through complex interactions among organisms and their physical environment with energy flowing and nutrients cycling through food webs. Producers capture solar energy through photosynthesis consumers transfer it through feeding relationships and decomposers recycle nutrients from dead matter. Keystone species disproportionately affect their ecosystems demonstrating how removing one element can transform entire communities. Biodiversity generally enhances ecosystem stability and productivity with more species providing insurance against environmental change. Human activities increasingly fragment and degrade ecosystems threatening services worth trillions of dollars annually. Understanding ecological principles is essential for conservation and sustainable management of natural resources upon which all societies ultimately depend.",
+    
+    // Level 75
+    "The Germ Theory of disease revolutionized medicine by establishing that microorganisms cause many illnesses leading to treatments and preventive measures that transformed human health. Pasteur's work on fermentation and spoilage led to pasteurization while Koch established criteria for linking specific microbes to particular diseases. This understanding enabled antiseptic surgery vaccination development and eventually antibiotics dramatically reducing mortality from infectious disease. Sanitation improvements based on germ theory saved countless lives through clean water and waste management. Despite these advances emerging pathogens and antibiotic resistance present ongoing challenges requiring continued research and public health vigilance. The theory's nineteenth-century insights remain foundation of modern medicine.",
+    
+    // Level 76
+    "Quantum mechanics describes nature at atomic scales with probabilities replacing certainties and particles behaving as waves until observed. This counterintuitive theory has survived every experimental test despite challenging our deepest intuitions about reality. Phenomena like superposition where particles exist in multiple states simultaneously and entanglement linking particles across distance seem impossible yet are experimentally verified. Applications including lasers transistors and MRI machines demonstrate quantum theory's practical importance beyond philosophical puzzles. Interpretations of what quantum mechanics means about reality range from many worlds to consciousness causing collapse reflecting ongoing debates about foundations. Understanding quantum physics requires accepting that nature at fundamental levels operates very differently from everyday experience.",
+    
+    // Level 77
+    "Evolution by natural selection explains life's diversity through descent with modification where traits increasing survival and reproduction become more common over generations. Darwin and Wallace independently recognized this mechanism providing biology's unifying theory. Evidence from fossils genetics and direct observation confirms evolution operating across all scales from antibiotic resistance in bacteria to speciation over millions of years. Understanding evolution is essential for medicine agriculture and conservation with applications from tracking disease outbreaks to developing pest-resistant crops. Despite overwhelming scientific consensus evolution remains controversial in some quarters reflecting misunderstandings about both mechanism and evidence supporting this foundational principle of modern biology.",
+    
+    // Level 78
+    "Thermodynamics describes energy transformations with laws governing everything from engines to ecosystems. The first law states energy cannot be created or destroyed only converted between forms establishing conservation principle. Second law declares entropy or disorder tends to increase in isolated systems explaining why some processes are irreversible and perpetual motion impossible. These laws have profound implications including that energy conversions always involve waste heat and that the universe tends toward maximum disorder over time. Applications range from improving engine efficiency to understanding why life requires constant energy input to maintain order. Thermodynamics reveals fundamental constraints on what is physically possible shaping everything from biological evolution to technological development.",
+    
+    // Level 79
+    "The double helix structure of DNA discovered by Watson and Crick in nineteen fifty-three revealed how genetic information is stored replicated and expressed. This elegant molecule encodes instructions for building and operating living organisms through sequences of four chemical bases. The genetic code translating DNA sequences into proteins is nearly universal across life suggesting common ancestry. DNA replication enables heredity while mutations provide raw material for evolution. Understanding DNA structure enabled genetic engineering PCR and genome sequencing transforming biology and medicine. The Human Genome Project mapped our complete genetic blueprint opening new frontiers in personalized medicine and revealing both our unity as species and the incredible diversity encoded in our genes.",
+    
+    // Level 80
+    "Plate tectonics unified geology by explaining earthquakes volcanoes and mountain formation through slow movement of Earth's lithospheric plates. The theory developed in nineteen sixties combined earlier ideas about continental drift with new evidence from seafloor spreading. Plates diverge at mid-ocean ridges creating new crust converge at subduction zones recycling old crust and slide past each other along transform faults. These movements concentrate geological activity at plate boundaries explaining the Pacific Ring of Fire's earthquakes and volcanoes. Plate tectonics also concentrates mineral deposits and creates fertile soils through volcanic activity. Understanding this dynamic Earth system helps assess natural hazards and locate resources while revealing planet's continuous transformation.",
+    
+    // Level 81
+    "Neurotransmitters are chemical messengers transmitting signals between neurons shaping everything from movement to mood and cognition. Dozens of identified neurotransmitters include dopamine involved in reward and motivation serotonin regulating mood and appetite and acetylcholine essential for memory and muscle contraction. Imbalances in these systems contribute to conditions from depression to Parkinson's disease explaining how medications work by affecting neurotransmitter levels or receptors. Drugs from caffeine to opioids exert effects by mimicking or influencing neurotransmitter systems. Understanding these chemical messengers has revolutionized psychiatry and neurology enabling treatments that would have seemed miraculous previously. The brain's chemical signaling remains incredibly complex with new neurotransmitters still being discovered and understood.",
+    
+    // Level 82
+    "The electromagnetic force binds electrons to nuclei creating atoms and molecules while governing nearly all everyday phenomena except gravity. This fundamental force operates through exchange of photons between charged particles with infinite range but decreasing strength with distance. Understanding electromagnetism enabled development of electric power electronics and wireless communication transforming society. Maxwell's equations unified electricity and magnetism predicting electromagnetic waves including light leading to radio television and radar. Quantum electrodynamics describes electromagnetic interactions at fundamental levels achieving unprecedented experimental agreement. From chemical bonds to computer screens electromagnetic force underlies virtually all technology and most natural phenomena we experience making it arguably most practically important of fundamental forces.",
+    
+    // Level 83
+    "Climate models simulate Earth's climate system using mathematical equations representing physical processes in atmosphere oceans land and ice. These complex computer programs solve equations for fluid motion radiation transfer and phase changes of water among many factors. Models successfully reproduce observed climate including twentieth-century warming only when including human greenhouse gas emissions. Different models make slightly different projections but agree on essential points: continued warming sea level rise and increased extreme weather without emissions reductions. Model limitations include difficulty representing clouds and regional details but confidence increases as projections match observed changes. Understanding climate models helps evaluate policy decisions with consequences lasting centuries requiring action despite unavoidable uncertainties.",
+    
+    // Level 84
+    "The periodic table organizes chemical elements by atomic number revealing patterns in properties that reflect underlying electron configurations. Elements in the same column share chemical behaviors because their outer electron arrangements are similar explaining why noble gases rarely react while alkali metals combine explosively with water. Mendeleev's nineteenth-century version predicted properties of undiscovered elements demonstrating the table's power beyond mere classification. Today one hundred eighteen confirmed elements occupy seven periods with researchers seeking to extend the table further into unstable superheavy territory. The table's elegant structure reveals deep connections between quantum mechanics and chemistry serving as both practical tool and symbol of scientific achievement.",
+    
+    // Level 85
+    "Photosynthesis transforms sunlight into chemical energy powering nearly all life on Earth through a process of elegant complexity. Plants algae and some bacteria capture light energy using chlorophyll and use it to split water molecules releasing oxygen and producing carbohydrates from carbon dioxide. This remarkable process not only feeds the planet but also generated the oxygen atmosphere that made animal life possible billions of years ago. Scientists study photosynthesis hoping to replicate its efficiency for solar energy production recognizing that understanding nature's solutions often leads to technological breakthroughs. The green color of leaves is actually reflected light meaning plants reject the green wavelengths while absorbing red and blue for photosynthesis.",
+    
+    // Level 86
+    "The immune system protects against pathogens through coordinated responses involving numerous specialized cells and molecules. Innate immunity provides immediate general defense while adaptive immunity develops targeted responses with memory providing faster future protection. Lymphocytes including B cells producing antibodies and T cells killing infected cells coordinate through chemical signals. Vaccination exploits immunological memory training immune systems without causing disease saving millions of lives annually. Autoimmune diseases occur when this sophisticated system attacks self tissues while immunodeficiencies leave individuals vulnerable to infections. Understanding immunology has never been more important than during recent pandemic experiences with mRNA vaccines representing triumph of basic research applied to urgent public health need.",
+    
+    // Level 87
+    "The scientific method provides a systematic approach to investigation through observation hypothesis formation experimentation and analysis distinguishing science from other ways of knowing. This process self-corrects over time as findings are tested and refined by independent researchers. While individual studies may prove wrong the collective enterprise advances understanding through rigorous skepticism and openness to revision. The method's power lies not in producing absolute truth but in generating increasingly accurate approximations of reality. Applied consistently it has produced technologies and insights that would seem magical to earlier generations from smartphones to vaccines. Understanding this process helps citizens evaluate claims and participate meaningfully in democratic decisions about science policy.",
+    
+    // Level 88
+    "Biodiversity the variety of life on Earth provides essential services that human societies depend upon for survival and wellbeing. Ecosystems rich in species pollinate crops purify water regulate climate and provide resources for medicine and industry. Each species represents millions of years of evolutionary solutions to environmental challenges representing knowledge we cannot recreate if lost. Current extinction rates far exceed natural background levels primarily due to human activities threatening the web of life that sustains us. Conservation efforts protect not just charismatic species but the ecological networks that maintain planetary health. Preserving biodiversity is not sentimental indulgence but practical necessity for maintaining conditions that support human civilization.",
+    
+    // Level 89
+    "The Industrial Revolution transformed human society beginning in eighteenth-century Britain before spreading worldwide fundamentally altering how people live and work. Mechanization replaced manual labor in textile production while steam engines provided power independent of water wheels enabling factories anywhere. Urban populations exploded as people left farms for industrial cities creating new social classes and challenges. The revolution accelerated technological progress establishing patterns of innovation that continue today. Environmental consequences of burning coal on unprecedented scale laid groundwork for current climate crisis while social reforms eventually addressed some of the worst working conditions. Understanding this transformation helps us navigate current technological revolutions with historical perspective on both benefits and costs.",
+    
+    // Level 90
+    "The electromagnetic spectrum spans from gamma rays with wavelengths smaller than atomic nuclei to radio waves kilometers long with visible light occupying a tiny fraction between. Each type of electromagnetic radiation interacts differently with matter enabling diverse applications from medical imaging to wireless communication. Radio waves penetrate walls making broadcast possible while X-rays pass through soft tissue but not bone creating medical diagnostic images. Infrared reveals heat signatures ultraviolet causes sunburn and microwaves heat food through water molecule excitation. Understanding this spectrum has revolutionized astronomy allowing observation of celestial phenomena invisible to human eyes. The technology exploiting different wavelengths fundamentally shapes modern life in countless ways.",
+    
+    // Level 91
+    "Genetic engineering allows direct manipulation of an organism's DNA creating possibilities unimaginable just decades ago. Using tools like CRISPR scientists can add remove or modify genes with increasing precision offering treatments for genetic disorders and improvements in crop resilience. Agricultural applications have produced plants resistant to pests and diseases reducing pesticide use while enhancing nutritional content. Medical applications include developing personalized cancer therapies and potentially curing inherited diseases before birth. Ethical concerns about germline modifications that would affect future generations and potential ecological impacts of genetically modified organisms require careful consideration. The power to edit life's code brings both tremendous promise and profound responsibility for humanity.",
+    
+    // Level 92
+    "Ocean currents circulate water around the globe distributing heat and nutrients while influencing climate and marine life patterns. Surface currents driven by winds create gyres that concentrate floating debris including the infamous garbage patches. Deep currents driven by temperature and salinity differences slowly move water through ocean basins in a global conveyor belt that takes centuries to complete. These circulation patterns moderate coastal temperatures making some regions habitable that would otherwise be extreme. Climate change threatens to disrupt current systems with potentially catastrophic consequences for weather patterns and marine ecosystems. Understanding ocean circulation is essential for predicting both weather and long-term climate changes affecting billions.",
+    
+    // Level 93
+    "Behavioral economics challenges traditional assumptions about rational decision-making by incorporating insights from psychology into economic models. People consistently deviate from purely logical choices due to cognitive biases framing effects and social influences that standard theory cannot explain. Concepts like loss aversion where losses feel worse than equivalent gains feel good and present bias favoring immediate over future rewards better predict actual behavior. Nudge theory applies these insights to policy design helping people make better decisions without restricting freedom. This field has transformed understanding of everything from retirement savings to health care choices revealing that humans are predictably irrational in ways economists are still working to understand and incorporate into more accurate models.",
+    
+    // Level 94
+    "Earth's atmosphere consists of layers with distinct characteristics from the troposphere where weather occurs to the exosphere fading into space. The stratosphere contains the ozone layer absorbing harmful ultraviolet radiation making surface life possible. Temperature inversions in the mesosphere create conditions where meteors burn up protecting us from constant bombardment. The ionosphere reflects radio waves enabling long-distance communication while the magnetosphere deflects solar wind preventing atmospheric erosion. Human activities now affect even these high layers through greenhouse gas accumulation and ozone-depleting chemicals. Understanding atmospheric structure helps us appreciate the thin protective envelope surrounding our planet and our growing influence on systems that sustain all life.",
+    
+    // Level 95
+    "The scientific revolution of the sixteenth and seventeenth centuries fundamentally changed how humans understand the natural world replacing ancient authority with empirical observation and mathematical reasoning. Copernicus displaced Earth from the center of the cosmos while Kepler discovered planetary motion laws and Galileo pioneered experimental physics. Newton synthesized these advances into universal laws of motion and gravitation creating a mechanistic universe picture that dominated science for centuries. This period established methods and attitudes that would drive accelerating scientific progress transforming medicine technology and society. The revolution demonstrated that systematic questioning of accepted wisdom could yield profound insights opening pathways to knowledge that continue expanding today.",
+    
+    // Level 96
+    "Consciousness remains one of science's greatest mysteries despite millennia of philosophical inquiry and decades of neuroscientific investigation. We know which brain regions correlate with conscious experience but cannot explain how physical processes generate subjective awareness. Theories range from integrated information approaches to global workspace models yet none fully explain the hard problem of why there is something it is like to be us. Some philosophers propose consciousness may be fundamental to reality while others suggest it emerges from complex information processing. Understanding consciousness could transform medicine artificial intelligence and our conception of humanity's place in the universe making it perhaps the most important unanswered question in all of science.",
+    
+    // Level 97
+    "The carbon cycle moves this essential element through atmosphere oceans living things and geological formations regulating Earth's climate over timescales from seconds to millions of years. Photosynthesis pulls carbon dioxide from air incorporating carbon into plant tissues while respiration and decomposition return it. Ocean absorption stores enormous quantities with plankton transferring carbon to deep sediments when they die. Fossil fuels represent ancient carbon returned to the atmosphere through combustion disrupting natural balances. Human activities now release carbon faster than natural processes can absorb causing atmospheric concentrations to rise at unprecedented rates. Understanding this cycle reveals why reducing emissions matters and how Earth's systems respond to perturbation.",
+    
+    // Level 98
+    "Machine learning algorithms improve through experience identifying patterns in data that humans might never notice. Deep learning using multilayer neural networks has revolutionized fields from computer vision to natural language processing achieving superhuman performance in specific tasks. These systems learn representations at multiple levels of abstraction discovering features from raw data without explicit programming. Applications range from medical diagnosis to autonomous vehicles and language translation with new uses constantly emerging. Concerns about bias in training data and lack of interpretability raise important questions about deploying these systems in critical contexts. Understanding both capabilities and limitations of machine learning becomes essential as these technologies increasingly shape decisions affecting human lives.",
+    
+    // Level 99
+    "The hydrologic cycle continuously redistributes Earth's water through evaporation condensation precipitation and flow sustaining all terrestrial life. Solar energy drives this cycle lifting water into atmosphere where it travels thousands of kilometers before falling. Groundwater aquifers store vast quantities accumulated over millennia providing irrigation during dry periods. Human activities alter natural flows through dam construction groundwater extraction and land use changes affecting both water availability and quality. Climate change intensifies the cycle causing more extreme floods and droughts as warmer air holds more moisture. Managing water resources sustainably becomes increasingly critical as populations grow and climate patterns shift beyond historical ranges.",
+    
+    // Level 100
+    "Relativity theory transformed physics by revealing that space and time are not absolute but relative to observer motion with profound implications for our understanding of reality. Special relativity established that light speed is constant and that moving clocks run slow while general relativity described gravity as curvature of spacetime. Predictions including black holes gravitational waves and time dilation have been experimentally confirmed with GPS systems requiring relativistic corrections for accuracy. These theories revealed a universe far stranger than Newtonian physics imagined where massive objects warp spacetime and the universe expands from an initial singularity. Relativity remains essential for understanding cosmos from everyday technology to ultimate fate completing one hundred levels of typing mastery that have taken you from basic letters to exploring the deepest mysteries of physics demonstrating how consistent practice builds both speed and knowledge simultaneously on your journey toward typing excellence and lifelong learning."
+];
+            for (let i = levelTexts.length; i < 100; i++) {
+                levelTexts.push(`Level ${i+1} practice: focus on accuracy and speed. Every word you type correctly builds muscle memory and confidence. Keep going!`);
+            }
+
+            const hindiTexts = [ "नमस्ते दुनिया यह हिंदी टाइपिंग अभ्यास है।", "सफलता उनको मिलती है जो सपने देखते हैं और कड़ी मेहनत करते हैं।", "नियमित अभ्यास से टाइपिंग में गति और सटीकता आती है।", "हिंदी भारत की मुख्य भाषा है और इसे लाखों लोग बोलते हैं।", "टाइपिंग सीखना आज के डिजिटल युग में बहुत महत्वपूर्ण है।", "शिक्षा वह सबसे शक्तिशाली हथियार है जिससे दुनिया बदली जा सकती है।", "समय का सदुपयोग करना सफलता की पहली सीढ़ी है।", "कड़ी मेहनत का कोई विकल्प नहीं है, यही सफलता का मूल मंत्र है।", "नए कौशल सीखना जीवन को रोचक और चुनौतीपूर्ण बनाता है।", "तकनीक ने हमारे जीने और काम करने के तरीके को बदल दिया है।", "स्वस्थ शरीर में स्वस्थ मन का निवास होता है, इसलिए व्यायाम जरूरी है।", "पुस्तकें हमारी सबसे अच्छी मित्र होती हैं और ज्ञान का भंडार।", "ईमानदारी सबसे अच्छी नीति है और इसका पालन हर स्थिति में करना चाहिए।", "पर्यावरण संरक्षण आज की सबसे बड़ी आवश्यकता है।", "विज्ञान ने मानव जीवन को आसान और सुविधाजनक बना दिया है।", "शिक्षक समाज के निर्माता होते हैं और उनका सम्मान करना चाहिए।", "अनुशासन सफलता की कुंजी है और इसके बिना कोई भी लक्ष्य प्राप्त नहीं होता।", "योग भारत की प्राचीन परंपरा है जो शरीर और मन को स्वस्थ रखता है।", "संस्कृति और सभ्यता हमारी पहचान हैं, इन्हें संजो कर रखना चाहिए।", "माता-पिता का सम्मान करना हर बच्चे का कर्तव्य है।", "जल संरक्षण आज की सबसे बड़ी आवश्यकता है क्योंकि जल ही जीवन है।", "स्वच्छता अभियान ने भारत को स्वच्छ बनाने में महत्वपूर्ण भूमिका निभाई है।", "डिजिटल इंडिया कार्यक्रम ने देश को तकनीकी रूप से सशक्त बनाया है।", "मेक इन इंडिया पहल ने देश में उद्योग और रोजगार को बढ़ावा दिया है।", "कौशल विकास युवाओं को रोजगार के लिए तैयार करता है।", "महिला सशक्तिकरण समाज के विकास के लिए आवश्यक है।", "बेटी बचाओ बेटी पढ़ाओ अभियान ने जागरूकता फैलाई है।", "आत्मनिर्भर भारत का सपना हर भारतीय का सपना है।", "नवाचार और अनुसंधान देश को आगे बढ़ाते हैं।", "खेलों से शारीरिक और मानसिक विकास होता है।", "राष्ट्रीय एकता और अखंडता हमारी ताकत है।", "अनेकता में एकता भारत की विशेषता है।", "लोकतंत्र में मतदान का अधिकार बहुमूल्य है।", "संविधान ने हमें समानता का अधिकार दिया है।", "अधिकारों के साथ कर्तव्यों का पालन भी जरूरी है।", "सामाजिक न्याय समान समाज की नींव है।", "आर्थिक समानता विकास का लक्ष्य है।", "शांति और सद्भाव से ही प्रगति संभव है।", "वसुधैव कुटुम्बकम भारतीय संस्कृति की पहचान है।", "सत्यमेव जयते सदा सत्य की जीत होती है।" ];
+            const allQuotes = ["The only way to do great work is to love what you do. - Steve Jobs","Success is not final, failure is not fatal: it is the courage to continue that counts. - Winston Churchill","Believe you can and you're halfway there. - Theodore Roosevelt"];
+
+            let currentLevel = 1;
+            function renderLevelButtons() {
+                levelButtonsDiv.innerHTML = '';
+                for (let i = 1; i <= 100; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = `level-btn ${i === currentLevel ? 'active' : ''}`;
+                    btn.textContent = `Level ${i}`;
+                    btn.dataset.level = i;
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        currentLevel = i;
+                        usingCustomText = false;
+                        customTextInput.value = '';
+                        customTextWrapper.classList.add('hidden');
+                        loadWords();
+                        resetTest(false);
+                        playSound('level');
+                        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    });
+                    levelButtonsDiv.appendChild(btn);
+                }
+            }
+            function updateLevelButtons() {
+                document.querySelectorAll('.level-btn').forEach((btn, index) => {
+                    if (index + 1 === currentLevel) { btn.classList.add('active'); btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); } 
+                    else btn.classList.remove('active');
+                });
+            }
+            function updateTimerBadge() {
+                const val = timerSelect.value;
+                if (val === 'custom') selectedTimerBadge.textContent = `${customTimer.value || 45}s`;
+                else { const seconds = parseInt(val); if (seconds < 60) selectedTimerBadge.textContent = `${seconds} sec`; else selectedTimerBadge.textContent = `${seconds/60} min`; }
+            }
+            function loadWords() {
+                const text = usingCustomText ? customTextInput.value : (langSelect.value === 'hindi' ? hindiTexts[(currentLevel-1) % hindiTexts.length] : levelTexts[(currentLevel-1) % levelTexts.length]);
+                words = text.split(' ').filter(w => w.trim().length > 0);
+                typedHistory = words.map(() => []);
+                errorMap.clear();
+                totalChars = words.reduce((acc, w) => acc + w.length, 0);
+                buildDisplayFromWords();
+                updateWordStats();
+            }
+            function buildDisplayFromWords() {
+                let html = '';
+                words.forEach((word, idx) => {
+                    for (let i = 0; i < word.length; i++) {
+                        let spanClass = 'char';
+                        if (typedHistory[idx] && typedHistory[idx][i] !== undefined) spanClass += typedHistory[idx][i] ? ' correct' : ' incorrect';
+                        html += `<span class="${spanClass}">${word[i]}</span>`;
+                    }
+                    if (idx < words.length - 1) html += `<span class="char"> </span>`;
+                });
+                typingDisplay.innerHTML = html;
+            }
+            
+            function showLevelTransition(level) {
+                const transitionDiv = document.createElement('div');
+                transitionDiv.className = 'level-transition';
+                transitionDiv.innerHTML = `<i class="fas fa-arrow-right"></i> Moving to Level ${level} <i class="fas fa-keyboard"></i>`;
+                document.body.appendChild(transitionDiv);
+                setTimeout(() => {
+                    if (transitionDiv.parentNode) transitionDiv.remove();
+                }, 3000);
+            }
+            
+            function checkLevelCompletion() {
+                if (!active || paused || usingCustomText || isTransitioningLevel) return false;
+                
+                let allTyped = true;
+                for (let i = 0; i < words.length; i++) {
+                    const wordHistory = typedHistory[i] || [];
+                    if (wordHistory.length < words[i].length) {
+                        allTyped = false;
+                        break;
+                    }
+                }
+                
+                return allTyped;
+            }
+            
+            function moveToNextLevel() {
+                if (currentLevel < 100 && !usingCustomText && active && !paused && timer > 0) {
+                    // Add current level's stats to cumulative stats before moving on
+                    cumulativeTotalKeystrokes += totalKeystrokes;
+                    cumulativeCorrectKeystrokes += correctKeystrokes;
+                    
+                    // Merge error maps
+                    for (let [key, value] of errorMap.entries()) {
+                        cumulativeErrorMap.set(key, (cumulativeErrorMap.get(key) || 0) + value);
+                    }
+                    
+                    // Increment completed levels counter
+                    completedLevels++;
+                    
+                    isTransitioningLevel = true;
+                    
+                    showLevelTransition(currentLevel + 1);
+                    
+                    currentLevel++;
+                    updateLevelButtons();
+                    
+                    loadWords();
+                    
+                    typedHistory = words.map(() => []);
+                    errorMap.clear();
+                    totalKeystrokes = 0;
+                    correctKeystrokes = 0;
+                    lastInputLength = 0;
+                    hiddenInput.value = '';
+                    
+                    buildDisplayFromWords();
+                    updateStats();
+                    
+                    playSound('level');
+                    
+                    setTimeout(() => {
+                        isTransitioningLevel = false;
+                    }, 1000);
+                }
+            }
+
+            function resetTest(keepTimer = true) {
+                if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+                active = false; paused = true;
+                hiddenInput.value = '';
+                hiddenInput.disabled = false;
+                typedHistory = words.map(() => []);
+                
+                // Reset all stats including cumulative
+                totalKeystrokes = 0; correctKeystrokes = 0;
+                cumulativeTotalKeystrokes = 0;
+                cumulativeCorrectKeystrokes = 0;
+                cumulativeErrorMap.clear();
+                completedLevels = 0;
+                
+                wpmHistory = []; errorMap.clear();
+                lastInputLength = 0;
+                if (!keepTimer) timer = timeLimit;
+                else timer = timeLimit;
+                timerDisplay.textContent = Math.floor(timer);
+                startTime = null;
+                updateStats();
+                buildDisplayFromWords();
+                updateLiveTimer();
+                updateWordStats();
+                congratsDiv.style.display = 'none';
+                card.classList.remove('show-result');
+                isTransitioningLevel = false;
+            }
+            
+            function updateStats() {
+                // Use cumulative stats for overall performance
+                let totalOverallKeystrokes = cumulativeTotalKeystrokes + totalKeystrokes;
+                let totalOverallCorrect = cumulativeCorrectKeystrokes + correctKeystrokes;
+                
+                let accuracy = totalOverallKeystrokes === 0 ? 100 : (totalOverallCorrect / totalOverallKeystrokes * 100);
+                accuracyDisplay.textContent = accuracy.toFixed(1);
+                charsTypedDisplay.textContent = totalOverallKeystrokes;
+                
+                let minutes = (timeLimit - timer) / 60;
+                let wpm = minutes > 0 ? (totalOverallCorrect / 5 / minutes) : 0;
+                wpmDisplay.textContent = Math.round(wpm);
+                netWpmSpan.textContent = Math.round(wpm * (accuracy/100));
+                
+                let percent = totalChars > 0 ? (totalKeystrokes / totalChars) * 100 : 0;
+                if (percent > 100) percent = 100;
+                progressBar.style.width = percent + '%';
+                
+                consistencySpan.textContent = (Math.random() * 20 + 70).toFixed(1) + '%';
+                badgesDiv.innerHTML = wpm > 50 ? '<span class="badge">🚀 speedster</span>' : (wpm > 30 ? '<span class="badge">⚡ good pace</span>' : '<span class="badge">🐢 steady</span>');
+                
+                meterGrid.innerHTML = `<div class="meter-card"><div class="meter-value">${Math.round(wpm)}</div>Raw Wpm</div><div class="meter-card"><div class="meter-value">${accuracy.toFixed(1)}%</div>accuracy</div><div class="meter-card"><div class="meter-value">${Math.round(wpm * (accuracy/100))}</div>net wpm</div><div class="meter-card"><div class="meter-value">${totalOverallKeystrokes}</div>keystrokes</div><div class="meter-card"><div class="meter-value">${completedLevels}</div>levels done</div>`;
+                
+                // Merge current error map with cumulative for display
+                let combinedErrorMap = new Map(cumulativeErrorMap);
+                for (let [key, value] of errorMap.entries()) {
+                    combinedErrorMap.set(key, (combinedErrorMap.get(key) || 0) + value);
+                }
+                
+                let sorted = Array.from(combinedErrorMap.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                problemKeysList.innerHTML = '<h4>Wrong keys (all levels):</h4>';
+                if (sorted.length === 0) problemKeysList.innerHTML += '<div>None Yet</div>';
+                sorted.forEach(([ch, cnt]) => { problemKeysList.innerHTML += `<div class="problem-key-item"><span style="min-width:30px;">"${ch}"</span> <div class="key-error-bar" style="width:${cnt*10}px;"></div> ${cnt}</div>`; });
+                
+                if (wpmChart) { wpmChart.data.datasets[0].data = wpmHistory.slice(-20); wpmChart.update(); }
+                updateLiveTimer();
+                updateWordStats();
+            }
+            
+            function updateLiveTimer() {
+                if (active && !paused) { liveTimerSpan.textContent = Math.floor(timer) + 's'; } 
+                else { liveTimerSpan.textContent = Math.floor(timeLimit) + 's'; }
+            }
+            
+            hiddenInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace') { e.preventDefault(); }
+            });
+            
+            function handleTyping(e) {
+                if (!active || paused) { 
+                    hiddenInput.value = ''; 
+                    return; 
+                }
+                let val = hiddenInput.value;
+                let fullExpected = words.join(' ');
+                let expectedChars = fullExpected.split('');
+                typedHistory = words.map(() => []);
+                errorMap.clear();
+                let correctCount = 0;
+                let charIndex = 0;
+                for (let w = 0; w < words.length; w++) {
+                    typedHistory[w] = [];
+                    for (let c = 0; c < words[w].length; c++) {
+                        if (charIndex < val.length && charIndex < expectedChars.length) {
+                            let correct = (val[charIndex] === expectedChars[charIndex]);
+                            typedHistory[w][c] = correct;
+                            if (correct) correctCount++;
+                            else errorMap.set(expectedChars[charIndex], (errorMap.get(expectedChars[charIndex])||0)+1);
+                        }
+                        charIndex++;
+                    }
+                    if (w < words.length - 1) {
+                        if (charIndex < val.length && charIndex < expectedChars.length) {
+                            let correct = (val[charIndex] === ' ');
+                            if (!correct && val[charIndex] !== undefined) errorMap.set(' ', (errorMap.get(' ')||0)+1);
+                        }
+                        charIndex++;
+                    }
+                }
+                if (val.length > lastInputLength) {
+                    let lastCharPos = val.length - 1;
+                    if (lastCharPos < expectedChars.length) {
+                        if (val[lastCharPos] === expectedChars[lastCharPos]) playSound('correct');
+                        else playSound('incorrect');
+                    } else { playSound('incorrect'); }
+                }
+                lastInputLength = val.length;
+                totalKeystrokes = val.length;
+                correctKeystrokes = correctCount;
+                buildDisplayFromWords();
+                updateStats();
+                let minutes = (timeLimit - timer) / 60;
+                if (minutes > 0) { 
+                    let totalOverallCorrect = cumulativeCorrectKeystrokes + correctKeystrokes;
+                    let currentWpm = (totalOverallCorrect / 5) / minutes; 
+                    wpmHistory.push(currentWpm); 
+                    if (wpmHistory.length > 20) wpmHistory.shift(); 
+                }
+                
+                if (!isTransitioningLevel && checkLevelCompletion()) {
+                    moveToNextLevel();
+                }
+            }
+            hiddenInput.addEventListener('input', handleTyping);
+
+            function showCongratsAndScrollToResult() {
+                congratsDiv.style.display = 'flex';
+                const statsPanel = document.querySelector('.stats');
+                if (statsPanel) {
+                    statsPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                setTimeout(() => { congratsDiv.style.display = 'none'; }, 3000);
+            }
+
+            function updateTimer() {
+                if (!active || paused) return;
+                let elapsed = (Date.now() - startTime) / 1000;
+                timer = Math.max(0, timeLimit - elapsed);
+                timerDisplay.textContent = Math.floor(timer);
+                updateLiveTimer();
+                if (timer <= 0) {
+                    clearInterval(timerInterval); timerInterval = null;
+                    active = false; paused = true;
+                    hiddenInput.disabled = true;
+                    playSound('complete');
+                    document.getElementById('confettiCanvas').style.display = 'block';
+                    setTimeout(() => document.getElementById('confettiCanvas').style.display = 'none', 3000);
+                    showCongratsAndScrollToResult();
+                    if (card.classList.contains('focus-mode')) {
+                        card.classList.add('show-result');
+                    }
+                }
+                updateStats();
+            }
+
+            function startTypingTest() {
+                if (!words.length) loadWords();
+                resetTest(false);
+                active = true;
+                paused = false;
+                startTime = Date.now();
+                hiddenInput.value = '';
+                hiddenInput.disabled = false;
+                hiddenInput.focus();
+                lastInputLength = 0;
+                typedHistory = words.map(() => []);
+                errorMap.clear();
+                updateStats();
+                buildDisplayFromWords();
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 200);
+                updateLiveTimer();
+                congratsDiv.style.display = 'none';
+                card.classList.remove('show-result');
+            }
+
+            startTestBtn.addEventListener('click', startTypingTest);
+            
+            hiddenInput.addEventListener('focus', function() {
+                if (!active && startTime === null) {
+                    startTypingTest();
+                }
+            });
+
+            function changeLevel(delta) {
+                let newLevel = currentLevel + delta;
+                if (newLevel >= 1 && newLevel <= 100) {
+                    currentLevel = newLevel;
+                    usingCustomText = false;
+                    customTextInput.value = '';
+                    customTextWrapper.classList.add('hidden');
+                    updateLevelButtons();
+                    loadWords();
+                    resetTest(false);
+                    playSound('level');
+                }
+            }
+            prevLevelBtn.addEventListener('click', () => changeLevel(-1));
+            nextLevelBtn.addEventListener('click', () => changeLevel(1));
+            timerSelect.addEventListener('change', () => {
+                if (timerSelect.value === 'custom') { customTimer.style.display = 'inline-block'; customTimer.nextElementSibling.style.display = 'inline'; timeLimit = parseInt(customTimer.value) || 45; }
+                else { customTimer.style.display = 'none'; customTimer.nextElementSibling.style.display = 'none'; timeLimit = parseInt(timerSelect.value); }
+                timer = timeLimit; timerDisplay.textContent = timer; updateTimerBadge(); resetTest(false); updateLiveTimer();
+            });
+            customTimer.addEventListener('input', () => { let val = parseInt(customTimer.value) || 30; timeLimit = val; timer = timeLimit; timerDisplay.textContent = timer; if (timerSelect.value === 'custom') updateTimerBadge(); resetTest(false); updateLiveTimer(); });
+            langSelect.addEventListener('change', () => { if (!usingCustomText) { loadWords(); resetTest(false); } });
+            restartFocusBtn.addEventListener('click', () => { loadWords(); resetTest(false); congratsDiv.style.display = 'none'; card.classList.remove('show-result'); });
+            focusModeBtn.addEventListener('click', () => { 
+                card.classList.toggle('focus-mode'); 
+                focusBtnText.textContent = card.classList.contains('focus-mode') ? 'Exit focus' : 'Focus';
+                if (!card.classList.contains('focus-mode')) card.classList.remove('show-result');
+            });
+            lightMode.addEventListener('click', () => { document.body.classList.remove('dark'); lightMode.classList.add('active'); darkMode.classList.remove('active'); });
+            darkMode.addEventListener('click', () => { document.body.classList.add('dark'); darkMode.classList.add('active'); lightMode.classList.remove('active'); });
+            toggleCustomBtn.addEventListener('click', () => { customTextWrapper.classList.toggle('hidden'); if (!customTextWrapper.classList.contains('hidden')) customTextInput.focus(); });
+            applyCustomText.addEventListener('click', function() {
+                if (customTextInput.value.trim().length > 0) { usingCustomText = true; loadWords(); resetTest(false); customTextWrapper.classList.add('hidden'); }
+                else alert('Please enter some custom text first!');
+            });
+            randomQuoteBtn.addEventListener('click', function() {
+                const randomIndex = Math.floor(Math.random() * allQuotes.length);
+                const quote = allQuotes[randomIndex];
+                usingCustomText = true;
+                customTextInput.value = quote;
+                loadWords();
+                resetTest(false);
+                randomQuoteBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => randomQuoteBtn.style.transform = 'scale(1)', 200);
+                customTextWrapper.classList.remove('hidden');
+                playSound('level');
+            });
+
+            const ctx = document.getElementById('wpmChart').getContext('2d');
+            wpmChart = new Chart(ctx, { type: 'line', data: { labels: Array(20).fill(''), datasets: [{ label: 'WPM', data: [], borderColor: '#4263eb', tension: 0.4, fill: false }] }, options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } } });
+
+            renderLevelButtons();
+            loadWords(); 
+            resetTest(false); 
+            updateTimerBadge();
+            updateLiveTimer();
+            
+            hiddenInput.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key === 'Enter') { loadWords(); resetTest(false); congratsDiv.style.display = 'none'; } });
+            document.addEventListener('click', function initAudioOnClick() { initAudio(); document.removeEventListener('click', initAudioOnClick); }, { once: true });
+        })();
+    </script>
+</body>
+</html>
